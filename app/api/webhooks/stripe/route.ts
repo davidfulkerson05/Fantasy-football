@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { saveAccessGrant } from "@/lib/db";
 import { sendAccessEmail } from "@/lib/email";
 import { nanoid } from "nanoid";
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature as string,
       process.env.STRIPE_WEBHOOK_SECRET as string

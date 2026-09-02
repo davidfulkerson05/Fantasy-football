@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { getLeaguePaidRecord } from "@/lib/db";
 
 // GET ?session_id=... -> polled by the success page. Returns ready:false
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   let session;
   try {
-    session = await stripe.checkout.sessions.retrieve(sessionId);
+    session = await getStripe().checkout.sessions.retrieve(sessionId);
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 400 });
   }

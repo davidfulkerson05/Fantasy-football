@@ -1,6 +1,16 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY as string);
+// Lazy singleton — same reason as lib/stripe.ts: constructing Resend()
+// validates the API key immediately, which breaks the build before the
+// key is even needed.
+let _resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY as string);
+  }
+  return _resend;
+}
 
 // Uses Resend's shared onboarding sender so this works with just an API
 // key — no domain verification needed to launch. Swap the `from` address
@@ -8,7 +18,7 @@ const resend = new Resend(process.env.RESEND_API_KEY as string);
 const FROM = "The Guillotine <onboarding@resend.dev>";
 
 export async function sendAccessEmail(email: string, leagueName: string, link: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Your Guillotine access link — ${leagueName}`,

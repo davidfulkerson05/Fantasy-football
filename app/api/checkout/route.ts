@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { getLeaguePaidRecord } from "@/lib/db";
 import { checkoutRatelimit, clientIp } from "@/lib/ratelimit";
 import { FOUNDING_PRICE_CENTS, CURRENCY } from "@/lib/pricing";
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const origin = new URL(req.url).origin;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: [
       {
