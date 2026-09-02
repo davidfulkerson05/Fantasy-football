@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { leaguesRatelimit, clientIp } from "@/lib/ratelimit";
+import { leaguesRatelimit, clientIp, safeLimit } from "@/lib/ratelimit";
 
 // Internal dev helper: proxies read-only calls to Sleeper's public API.
 // Exists because the sandboxed dev environment this app is built in can't
@@ -7,7 +7,7 @@ import { leaguesRatelimit, clientIp } from "@/lib/ratelimit";
 // base URL, GET-only, rate-limited — low risk since it only forwards to
 // Sleeper's already-public, unauthenticated data.
 export async function GET(req: NextRequest) {
-  const { success } = await leaguesRatelimit.limit(clientIp(req));
+  const success = await safeLimit(leaguesRatelimit, clientIp(req));
   if (!success) {
     return NextResponse.json({ error: "Too many requests, try again in a minute." }, { status: 429 });
   }

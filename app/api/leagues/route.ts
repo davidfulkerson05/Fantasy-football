@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserByUsername, getUserLeagues } from "@/lib/sleeper";
-import { leaguesRatelimit, clientIp } from "@/lib/ratelimit";
+import { leaguesRatelimit, clientIp, safeLimit } from "@/lib/ratelimit";
 
 // GET /api/leagues?username=someone&season=2025
 // No login involved — Sleeper league data is public. This just looks up
 // which leagues a username belongs to, so a visitor can pick theirs once.
 export async function GET(req: NextRequest) {
-  const { success } = await leaguesRatelimit.limit(clientIp(req));
+  const success = await safeLimit(leaguesRatelimit, clientIp(req));
   if (!success) {
     return NextResponse.json({ error: "Too many requests, try again in a minute." }, { status: 429 });
   }

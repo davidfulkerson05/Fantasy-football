@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { getLeaguePaidRecord } from "@/lib/db";
-import { checkoutRatelimit, clientIp } from "@/lib/ratelimit";
+import { checkoutRatelimit, clientIp, safeLimit } from "@/lib/ratelimit";
 import { FOUNDING_PRICE_CENTS, CURRENCY } from "@/lib/pricing";
 
 // POST { leagueId, leagueName, email? } -> { url } to redirect to Stripe Checkout.
 export async function POST(req: NextRequest) {
-  const { success } = await checkoutRatelimit.limit(clientIp(req));
+  const success = await safeLimit(checkoutRatelimit, clientIp(req));
   if (!success) {
     return NextResponse.json({ error: "Too many requests, try again in a minute." }, { status: 429 });
   }
