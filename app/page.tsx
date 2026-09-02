@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { PRICE_LABEL } from "@/lib/pricing";
 
 interface LeagueOption {
   league_id: string;
@@ -10,37 +11,52 @@ interface LeagueOption {
   total_rosters: number;
 }
 
-interface SavedLeague {
-  league_id: string;
-  name: string;
-  season: string;
-}
+const EXAMPLES = [
+  {
+    week: "Week 1",
+    text: `Week One. First blood.
 
-const STORAGE_KEY = "guillotine.league";
+FreeBallersDranik led all of you with 122.02 — the closest anyone came to impressing me.
+
+But I don't watch the top. I watch the bottom. McGoo99 offered me 89.98 points, and beside it sat reedwheeler's 90.42 — a margin of 0.44. Forty-four hundredths of a point stood between staying and dying this week.
+
+McGoo99 didn't have it.
+
+One down. Nine to go. I'll see the rest of you next Sunday.`,
+  },
+  {
+    week: "Week 3",
+    text: `Another week, another fallen comrade. Davidfulkerson05 went this time — not for one fatal mistake, but for none of you showing up at all. Every starter finished within a stone's throw of mediocre, top to bottom. No hero. No traitor. Just eleven bodies who all quietly did nothing, together, at the worst possible time.
+
+Somewhere else, Kylerm3 stood one bad Sunday from joining him. Ninety-six points, barely enough — and nearly a quarter of it came from one man's night alone. Whoever that was just bought the whole roster another week. Remember him. He may be the only reason that team is still breathing.
+
+The blade doesn't care how you survive. Only that you did — this time.`,
+  },
+  {
+    week: "Week 5",
+    text: `The blade falls again in Week 5. DMoses11 offered the least, and paid for it — one man in that lineup managed only 4.9 points, and that alone was nearly enough to seal it.
+
+Not far away, reedwheeler put up the loudest week of the season — 191.72, the biggest number anyone has posted all year. No single hero to thank. Four different players each cleared 27. For one week, that roster looked untouchable.
+
+The rest of you should take note. The line between them and the block is thinner than it looks.
+
+Place your bids. The guillotine waits, and it always hungers.`,
+  },
+];
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const [season, setSeason] = useState(String(new Date().getFullYear()));
   const [leagues, setLeagues] = useState<LeagueOption[] | null>(null);
-  const [selected, setSelected] = useState<SavedLeague | null>(null);
-  const [week, setWeek] = useState(1);
-  const [message, setMessage] = useState("");
+  const [selected, setSelected] = useState<LeagueOption | null>(null);
   const [loading, setLoading] = useState(false);
+  const [buying, setBuying] = useState(false);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setSelected(JSON.parse(saved));
-    } catch {
-      // ignore
-    }
-  }, []);
 
   async function findLeagues() {
     setError("");
     setLeagues(null);
+    setSelected(null);
     if (!username.trim()) return;
     setLoading(true);
     try {
@@ -57,118 +73,126 @@ export default function Home() {
     }
   }
 
-  function chooseLeague(l: LeagueOption) {
-    const saved: SavedLeague = { league_id: l.league_id, name: l.name, season: l.season };
-    setSelected(saved);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-    setLeagues(null);
-  }
-
-  function changeLeague() {
-    setSelected(null);
-    localStorage.removeItem(STORAGE_KEY);
-    setMessage("");
-  }
-
-  async function generate() {
+  async function buy() {
     if (!selected) return;
     setError("");
-    setMessage("");
-    setLoading(true);
+    setBuying(true);
     try {
-      const res = await fetch(`/api/generate?league_id=${selected.league_id}&week=${week}`);
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leagueId: selected.league_id, leagueName: selected.name }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong");
-      setMessage(data.message);
+      window.location.href = data.url;
     } catch (e) {
       setError((e as Error).message);
-    } finally {
-      setLoading(false);
+      setBuying(false);
     }
   }
 
-  async function copy() {
-    await navigator.clipboard.writeText(message);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-
   return (
-    <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 4 }}>The Guillotine</h1>
-      <p style={{ color: "#9a9691", marginTop: 0, marginBottom: 32 }}>
-        Weekly recap messages for elimination fantasy football leagues.
-      </p>
+    <main>
+      <section style={{ maxWidth: 640, margin: "0 auto", padding: "64px 20px 40px" }}>
+        <h1 style={{ fontSize: 40, marginBottom: 12, lineHeight: 1.1 }}>The Guillotine</h1>
+        <p style={{ color: "#c7c3be", fontSize: 18, marginTop: 0, marginBottom: 8 }}>
+          Every week, one of your Sleeper fantasy managers gets chopped. Every week, The
+          Guillotine writes the recap — merciless, specific, and ready to paste straight into
+          your group chat.
+        </p>
+        <p style={{ color: "#6f6b66", fontSize: 15 }}>
+          Built for guillotine / elimination leagues. Connects to Sleeper — no account setup, just
+          your league.
+        </p>
+      </section>
 
-      {!selected && (
-        <section>
-          <label style={label}>Sleeper username</label>
-          <input
-            style={input}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="e.g. Davidfulkerson05"
-            onKeyDown={(e) => e.key === "Enter" && findLeagues()}
-          />
-          <label style={label}>Season</label>
-          <input style={input} value={season} onChange={(e) => setSeason(e.target.value)} />
-          <button style={button} onClick={findLeagues} disabled={loading}>
-            {loading ? "Looking..." : "Find my leagues"}
-          </button>
-
-          {leagues && leagues.length === 0 && (
-            <p style={{ color: "#9a9691" }}>No leagues found for that username/season.</p>
-          )}
-          {leagues && leagues.length > 0 && (
-            <div style={{ marginTop: 20 }}>
-              <p style={label}>Pick your league</p>
-              {leagues.map((l) => (
-                <button key={l.league_id} style={leagueRow} onClick={() => chooseLeague(l)}>
-                  {l.name} <span style={{ color: "#6f6b66" }}>({l.season})</span>
-                </button>
-              ))}
+      <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 48px" }}>
+        {EXAMPLES.map((ex) => (
+          <div key={ex.week} style={{ marginBottom: 20 }}>
+            <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+              {ex.week} — real output
             </div>
-          )}
-        </section>
-      )}
+            <pre style={messageBox}>{ex.text}</pre>
+          </div>
+        ))}
+      </section>
 
-      {selected && (
-        <section>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <div style={{ fontWeight: 600 }}>{selected.name}</div>
-              <div style={{ color: "#6f6b66", fontSize: 13 }}>{selected.season}</div>
-            </div>
-            <button style={linkButton} onClick={changeLeague}>
-              change league
-            </button>
+      <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 64px" }}>
+        <div style={pricingCard}>
+          <div style={{ fontSize: 13, color: "#e0645a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+            Founding price
+          </div>
+          <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>{PRICE_LABEL}</div>
+          <div style={{ color: "#9a9691", marginBottom: 24 }}>
+            One-time, for your league&rsquo;s whole season. No subscription.
           </div>
 
-          <label style={label}>Week</label>
-          <input
-            style={{ ...input, width: 80 }}
-            type="number"
-            min={1}
-            max={18}
-            value={week}
-            onChange={(e) => setWeek(parseInt(e.target.value, 10) || 1)}
-          />
-          <button style={button} onClick={generate} disabled={loading}>
-            {loading ? "Sharpening..." : `Generate Week ${week}`}
-          </button>
-
-          {message && (
-            <div style={{ marginTop: 24 }}>
-              <pre style={messageBox}>{message}</pre>
-              <button style={button} onClick={copy}>
-                {copied ? "Copied!" : "Copy message"}
+          {!selected && (
+            <>
+              <label style={label}>Sleeper username</label>
+              <input
+                style={input}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g. Davidfulkerson05"
+                onKeyDown={(e) => e.key === "Enter" && findLeagues()}
+              />
+              <label style={label}>Season</label>
+              <input style={input} value={season} onChange={(e) => setSeason(e.target.value)} />
+              <button style={button} onClick={findLeagues} disabled={loading}>
+                {loading ? "Looking..." : "Find my leagues"}
               </button>
-            </div>
-          )}
-        </section>
-      )}
 
-      {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+              {leagues && leagues.length === 0 && (
+                <p style={{ color: "#9a9691", marginTop: 12 }}>No leagues found for that username/season.</p>
+              )}
+              {leagues && leagues.length > 0 && (
+                <div style={{ marginTop: 20 }}>
+                  <p style={label}>Pick your league</p>
+                  {leagues.map((l) => (
+                    <button key={l.league_id} style={leagueRow} onClick={() => setSelected(l)}>
+                      {l.name} <span style={{ color: "#6f6b66" }}>({l.season})</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {selected && (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div>
+                  <div style={{ fontWeight: 600 }}>{selected.name}</div>
+                  <div style={{ color: "#6f6b66", fontSize: 13 }}>{selected.season}</div>
+                </div>
+                <button style={linkButton} onClick={() => setSelected(null)}>
+                  change league
+                </button>
+              </div>
+              <button style={button} onClick={buy} disabled={buying}>
+                {buying ? "Redirecting to checkout..." : `Buy Season Pass — ${PRICE_LABEL}`}
+              </button>
+              <p style={{ color: "#6f6b66", fontSize: 12, marginTop: 8 }}>
+                You&rsquo;ll enter your email on the payment screen — your access link is shown
+                immediately after and emailed to you too.
+              </p>
+            </>
+          )}
+
+          {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+        </div>
+      </section>
+
+      <footer style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 48px", color: "#6f6b66", fontSize: 13 }}>
+        <a href="/terms" style={{ color: "#6f6b66", marginRight: 16 }}>
+          Terms
+        </a>
+        <a href="/privacy" style={{ color: "#6f6b66" }}>
+          Privacy
+        </a>
+      </footer>
     </main>
   );
 }
@@ -195,13 +219,15 @@ const input: React.CSSProperties = {
 
 const button: React.CSSProperties = {
   marginTop: 16,
-  padding: "10px 18px",
+  padding: "12px 20px",
   background: "#8a1c1c",
   border: "none",
   borderRadius: 6,
   color: "#fff",
-  fontSize: 15,
+  fontSize: 16,
+  fontWeight: 600,
   cursor: "pointer",
+  width: "100%",
 };
 
 const linkButton: React.CSSProperties = {
@@ -236,4 +262,12 @@ const messageBox: React.CSSProperties = {
   border: "1px solid #2a2a2c",
   borderRadius: 6,
   padding: 16,
+  color: "#d8d4cf",
+};
+
+const pricingCard: React.CSSProperties = {
+  background: "#151516",
+  border: "1px solid #2a2a2c",
+  borderRadius: 12,
+  padding: 28,
 };

@@ -3,20 +3,37 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getRosters, getLeagueUsers, getMatchups } from "@/lib/sleeper";
 import { buildWeekFacts } from "@/lib/facts";
 import { GUILLOTINE_SYSTEM_PROMPT, buildUserPrompt } from "@/lib/voice";
+import { getTokenRecord, getCachedWeek, setCachedWeek } from "@/lib/db";
 
-// GET /api/generate?league_id=...&week=1
-// Fetches that week's Sleeper data, computes the storyline facts, and asks
-// Claude to write the message in the Guillotine's voice.
+// GET /api/generate?token=...&week=1[&regenerate=1]
+// The token (from a paid season pass) resolves the league server-side —
+// nothing league-identifying is taken from the client, so there's nothing
+// to spoof. Results are cached per league+week so repeat clicks on the
+// same week don't re-spend Claude credits; ?regenerate=1 bypasses that.
 export async function GET(req: NextRequest) {
-  const leagueId = req.nextUrl.searchParams.get("league_id");
+  const token = req.nextUrl.searchParams.get("token");
   const weekParam = req.nextUrl.searchParams.get("week");
   const week = weekParam ? parseInt(weekParam, 10) : NaN;
+  const regenerate = req.nextUrl.searchParams.get("regenerate") === "1";
 
-  if (!leagueId || !Number.isFinite(week) || week < 1) {
-    return NextResponse.json({ error: "league_id and a valid week are required" }, { status: 400 });
+  if (!token || !Number.isFinite(week) || week < 1) {
+    return NextResponse.json({ error: "token and a valid week are required" }, { status: 400 });
   }
 
+  const grant = await getTokenRecord(token);
+  if (!grant) {
+    return NextResponse.json({ error: "Invalid or expired access link." }, { status: 403 });
+  }
+  const { leagueId } = grant;
+
   try {
+    if (!regenerate) {
+      const cached = await getCachedWeek(leagueId, week);
+      if (cached) {
+        return NextResponse.json(cached);
+      }
+    }
+
     const [rosters, users, matchups] = await Promise.all([
       getRosters(leagueId),
       getLeagueUsers(leagueId),
@@ -40,7 +57,10 @@ export async function GET(req: NextRequest) {
       .join("\n")
       .trim();
 
-    return NextResponse.json({ facts, message: text });
+    const result = { facts, message: text };
+    await setCachedWeek(leagueId, week, result);
+
+    return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 502 });
   }
