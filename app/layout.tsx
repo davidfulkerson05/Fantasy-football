@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "The Guillotine",
-  description: "Weekly recap messages for elimination fantasy football leagues.",
+  title: "Recapped",
+  description:
+    "AI-written weekly recap messages for your Sleeper fantasy football league — ready to paste into the group chat.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

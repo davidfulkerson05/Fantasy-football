@@ -11,32 +11,65 @@ interface LeagueOption {
   total_rosters: number;
 }
 
-const EXAMPLES = [
+// Standard redraft/dynasty leagues — the mass-market case. Fictional team
+// names (matches what the real generator uses: the roster's team name,
+// not a Sleeper username).
+const REDRAFT_EXAMPLES = [
+  {
+    week: "Week 4",
+    text: `Week 4 and somebody finally got the humiliation they deserved.
+
+Blitz Kids put up 143.62 and it still wasn't enough — Couch Commanders dropped 151.90 on them in the tightest game of the week, an 8.28-point gut punch. That's the kind of loss you don't sleep off in one night.
+
+Then there's Waiver Wire Wizards, who decided 79.11 points was an acceptable number to bring into Week 4. It was not. Somewhere in that lineup a $2 waiver pickup outscored two of your bench spots — I don't want to know which ones.
+
+Hail Mary Herd quietly put up the week's high score, 168.40, and nobody's talking about it because nobody expected it. Keep sneaking up on people like that and this league gets interesting fast.
+
+Set your lineups. I'd like to not see a repeat of Waiver Wire Wizards next week.`,
+  },
+  {
+    week: "Week 9",
+    text: `Week 9, and the standings are starting to mean something.
+
+Grid Iron Giants and The Comeback Kids played the closest game of the season — 132.50 to 129.80, decided on Monday night. The Comeback Kids will be thinking about that 2.7-point margin for a while.
+
+On the other end, Red Zone Renegades put up the ugliest final score of the year, going down 184.20 to 96.40 against Couch Commanders — an 87.8-point beatdown that's going to follow them into the group chat all week.
+
+End Zone Outlaws led the league in scoring, 171.30, and didn't even need their kicker to do it. That's a statement.
+
+Standings are tightening up. See everyone Sunday.`,
+  },
+];
+
+// The Guillotine — a specific voice/mode for elimination leagues, not the
+// whole product. Same anonymization approach: fictional team names in
+// place of the real usernames these were originally drafted from.
+const GUILLOTINE_EXAMPLES = [
   {
     week: "Week 1",
     text: `Week One. First blood.
 
-FreeBallersDranik led all of you with 122.02 — the closest anyone came to impressing me.
+Gridiron Gamble led all of you with 122.02 — the closest anyone came to impressing me.
 
-But I don't watch the top. I watch the bottom. McGoo99 offered me 89.98 points, and beside it sat reedwheeler's 90.42 — a margin of 0.44. Forty-four hundredths of a point stood between staying and dying this week.
+But I don't watch the top. I watch the bottom. Thunder Chickens offered me 89.98 points, and beside it sat Concrete Cleats' 90.42 — a margin of 0.44. Forty-four hundredths of a point stood between staying and dying this week.
 
-McGoo99 didn't have it.
+Thunder Chickens didn't have it.
 
 One down. Nine to go. I'll see the rest of you next Sunday.`,
   },
   {
     week: "Week 3",
-    text: `Another week, another fallen comrade. Davidfulkerson05 went this time — not for one fatal mistake, but for none of you showing up at all. Every starter finished within a stone's throw of mediocre, top to bottom. No hero. No traitor. Just eleven bodies who all quietly did nothing, together, at the worst possible time.
+    text: `Another week, another fallen comrade. Sunday Scaries went this time — not for one fatal mistake, but for none of you showing up at all. Every starter finished within a stone's throw of mediocre, top to bottom. No hero. No traitor. Just eleven bodies who all quietly did nothing, together, at the worst possible time.
 
-Somewhere else, Kylerm3 stood one bad Sunday from joining him. Ninety-six points, barely enough — and nearly a quarter of it came from one man's night alone. Whoever that was just bought the whole roster another week. Remember him. He may be the only reason that team is still breathing.
+Somewhere else, Bench Warmers stood one bad Sunday from joining him. Ninety-six points, barely enough — and nearly a quarter of it came from one man's night alone. Whoever that was just bought the whole roster another week. Remember him. He may be the only reason that team is still breathing.
 
 The blade doesn't care how you survive. Only that you did — this time.`,
   },
   {
     week: "Week 5",
-    text: `The blade falls again in Week 5. DMoses11 offered the least, and paid for it — one man in that lineup managed only 4.9 points, and that alone was nearly enough to seal it.
+    text: `The blade falls again in Week 5. Fumble Farm offered the least, and paid for it — one man in that lineup managed only 4.9 points, and that alone was nearly enough to seal it.
 
-Not far away, reedwheeler put up the loudest week of the season — 191.72, the biggest number anyone has posted all year. No single hero to thank. Four different players each cleared 27. For one week, that roster looked untouchable.
+Not far away, Concrete Cleats put up the loudest week of the season — 191.72, the biggest number anyone has posted all year. No single hero to thank. Four different players each cleared 27. For one week, that roster looked untouchable.
 
 The rest of you should take note. The line between them and the block is thinner than it looks.
 
@@ -106,23 +139,42 @@ export default function Home() {
   return (
     <main>
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "64px 20px 40px" }}>
-        <h1 style={{ fontSize: 40, marginBottom: 12, lineHeight: 1.1 }}>The Guillotine</h1>
+        <h1 style={{ fontSize: 40, marginBottom: 12, lineHeight: 1.1 }}>Recapped</h1>
         <p style={{ color: "#c7c3be", fontSize: 18, marginTop: 0, marginBottom: 8 }}>
-          Every week, one of your Sleeper fantasy managers gets chopped. Every week, The
-          Guillotine writes the recap — merciless, specific, and ready to paste straight into
-          your group chat.
+          AI-written weekly recap messages for your Sleeper fantasy football league — ready to
+          paste straight into the group chat, every week.
         </p>
         <p style={{ color: "#6f6b66", fontSize: 15 }}>
-          Built for guillotine / elimination leagues. Connects to Sleeper — no account setup, just
+          Works with any Sleeper league. Redraft, dynasty, or full-on elimination — we detect your
+          league&rsquo;s format automatically and write in the right voice. No account setup, just
           your league.
         </p>
       </section>
 
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 48px" }}>
-        {EXAMPLES.map((ex) => (
+        <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>
+          See it in action
+        </div>
+        {REDRAFT_EXAMPLES.map((ex) => (
           <div key={ex.week} style={{ marginBottom: 20 }}>
             <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
-              {ex.week} — real output
+              {ex.week} — sample output
+            </div>
+            <pre style={messageBox}>{ex.text}</pre>
+          </div>
+        ))}
+      </section>
+
+      <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 48px" }}>
+        <h2 style={{ fontSize: 24, marginBottom: 8 }}>Running a guillotine or elimination league?</h2>
+        <p style={{ color: "#9a9691", fontSize: 15, marginTop: 0, marginBottom: 20 }}>
+          Same tool, a much darker voice. The Guillotine is a personified blade that tracks who
+          gets chopped each week — merciless, specific, and just as ready to paste.
+        </p>
+        {GUILLOTINE_EXAMPLES.map((ex) => (
+          <div key={ex.week} style={{ marginBottom: 20 }}>
+            <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+              {ex.week} — sample output
             </div>
             <pre style={messageBox}>{ex.text}</pre>
           </div>
