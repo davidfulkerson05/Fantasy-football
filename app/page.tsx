@@ -17,6 +17,7 @@ interface LeagueOption {
 const REDRAFT_EXAMPLES = [
   {
     week: "Week 4",
+    time: "Tue 8:02 AM",
     text: `Week 4 and somebody finally got the humiliation they deserved.
 
 Blitz Kids put up 143.62 and it still wasn't enough — Couch Commanders dropped 151.90 on them in the tightest game of the week, an 8.28-point gut punch. That's the kind of loss you don't sleep off in one night.
@@ -29,6 +30,7 @@ Set your lineups. I'd like to not see a repeat of Waiver Wire Wizards next week.
   },
   {
     week: "Week 9",
+    time: "Tue 7:45 AM",
     text: `Week 9, and the standings are starting to mean something.
 
 Grid Iron Giants and The Comeback Kids played the closest game of the season — 132.50 to 129.80, decided on Monday night. The Comeback Kids will be thinking about that 2.7-point margin for a while.
@@ -47,6 +49,7 @@ Standings are tightening up. See everyone Sunday.`,
 const GUILLOTINE_EXAMPLES = [
   {
     week: "Week 1",
+    time: "Tue 9:03 AM",
     text: `Week One. First blood.
 
 Gridiron Gamble led all of you with 122.02 — the closest anyone came to impressing me.
@@ -59,6 +62,7 @@ One down. Nine to go. I'll see the rest of you next Sunday.`,
   },
   {
     week: "Week 3",
+    time: "Tue 8:41 AM",
     text: `Another week, another fallen comrade. Sunday Scaries went this time — not for one fatal mistake, but for none of you showing up at all. Every starter finished within a stone's throw of mediocre, top to bottom. No hero. No traitor. Just eleven bodies who all quietly did nothing, together, at the worst possible time.
 
 Somewhere else, Bench Warmers stood one bad Sunday from joining him. Ninety-six points, barely enough — and nearly a quarter of it came from one man's night alone. Whoever that was just bought the whole roster another week. Remember him. He may be the only reason that team is still breathing.
@@ -67,6 +71,7 @@ The blade doesn't care how you survive. Only that you did — this time.`,
   },
   {
     week: "Week 5",
+    time: "Tue 9:17 AM",
     text: `The blade falls again in Week 5. Fumble Farm offered the least, and paid for it — one man in that lineup managed only 4.9 points, and that alone was nearly enough to seal it.
 
 Not far away, Concrete Cleats put up the loudest week of the season — 191.72, the biggest number anyone has posted all year. No single hero to thank. Four different players each cleared 27. For one week, that roster looked untouchable.
@@ -86,6 +91,41 @@ function PREVIEW_TEXT(leagueName: string): string {
 The blade has been watching your league all week, and it already knows exactly who's getting chopped, by how much, and who almost joined them.
 
 Every name. Every score. Every detail that makes your group chat go off — written and ready to paste, the moment you unlock it.`;
+}
+
+// Renders one example as a chat message rather than a plain text box —
+// reads as "here's what actually shows up in your group chat" instead of
+// marketing copy in a card.
+function ChatBubble({
+  sender,
+  time,
+  text,
+  accent,
+}: {
+  sender: string;
+  time: string;
+  text: string;
+  accent: string;
+}) {
+  const initials = sender
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  return (
+    <div style={chatCard}>
+      <div style={chatRow}>
+        <div style={{ ...avatarCircle, background: accent }}>{initials}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={senderNameStyle}>{sender}</div>
+          <div style={bubbleStyle}>{text}</div>
+          <div style={timestampStyle}>{time}</div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Home() {
@@ -160,7 +200,7 @@ export default function Home() {
             <div style={{ color: "#8c8579", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
               {ex.week} — sample output
             </div>
-            <pre style={messageBox}>{ex.text}</pre>
+            <ChatBubble sender="League Update" time={ex.time} text={ex.text} accent="#c2410c" />
           </div>
         ))}
       </section>
@@ -176,7 +216,7 @@ export default function Home() {
             <div style={{ color: "#8c8579", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
               {ex.week} — sample output
             </div>
-            <pre style={messageBox}>{ex.text}</pre>
+            <ChatBubble sender="The Guillotine" time={ex.time} text={ex.text} accent="#2a2723" />
           </div>
         ))}
       </section>
@@ -236,7 +276,9 @@ export default function Home() {
               <button style={button} tabIndex={-1}>
                 Generate Week 1
               </button>
-              <pre style={{ ...messageBox, marginTop: 24 }}>{PREVIEW_TEXT(selected.name)}</pre>
+              <div style={{ marginTop: 24 }}>
+                <ChatBubble sender="League Update" time="Just now" text={PREVIEW_TEXT(selected.name)} accent="#c2410c" />
+              </div>
             </div>
 
             <div style={overlayBackdrop}>
@@ -341,16 +383,55 @@ const leagueRow: React.CSSProperties = {
   cursor: "pointer",
 };
 
-const messageBox: React.CSSProperties = {
-  whiteSpace: "pre-wrap",
-  fontFamily: "inherit",
-  fontSize: 15,
-  lineHeight: 1.6,
+const chatCard: React.CSSProperties = {
   background: "#ffffff",
   border: "1px solid #e4e0d8",
-  borderRadius: 6,
+  borderRadius: 12,
   padding: 16,
-  color: "#2a2723",
+};
+
+const chatRow: React.CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  gap: 10,
+};
+
+const avatarCircle: React.CSSProperties = {
+  flexShrink: 0,
+  width: 32,
+  height: 32,
+  borderRadius: "50%",
+  color: "#fff",
+  fontSize: 12,
+  fontWeight: 700,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const senderNameStyle: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#3a362f",
+  marginBottom: 4,
+};
+
+const bubbleStyle: React.CSSProperties = {
+  whiteSpace: "pre-wrap",
+  fontSize: 15,
+  lineHeight: 1.5,
+  background: "#e9e9eb",
+  color: "#1c1c1e",
+  borderRadius: 18,
+  padding: "12px 16px",
+  boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+};
+
+const timestampStyle: React.CSSProperties = {
+  fontSize: 11,
+  color: "#a39c8f",
+  marginTop: 6,
+  marginLeft: 4,
 };
 
 const pricingCard: React.CSSProperties = {

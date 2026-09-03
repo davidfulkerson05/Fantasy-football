@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackPurchase } from "@/lib/pixel";
 
 export default function SuccessPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -35,6 +36,12 @@ export default function SuccessPage() {
           setLeagueName(data.leagueName);
           setIsElimination(!!data.isElimination);
           setStatus("ready");
+
+          const dedupeKey = `fbq_purchase_${sessionId}`;
+          if (!sessionStorage.getItem(dedupeKey)) {
+            trackPurchase();
+            sessionStorage.setItem(dedupeKey, "1");
+          }
           return;
         }
       } catch {
