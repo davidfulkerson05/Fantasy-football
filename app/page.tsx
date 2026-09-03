@@ -44,6 +44,17 @@ Place your bids. The guillotine waits, and it always hungers.`,
   },
 ];
 
+// Blurred, so the exact words don't matter — just needs to look like a
+// real message is sitting right there, personalized to the league they
+// just picked, so the paywall reads as "unlock this" not "buy blind."
+function PREVIEW_TEXT(leagueName: string): string {
+  return `${leagueName} — Week 1
+
+The blade has been watching your league all week, and it already knows exactly who's getting chopped, by how much, and who almost joined them.
+
+Every name. Every score. Every detail that makes your group chat go off — written and ready to paste, the moment you unlock it.`;
+}
+
 export default function Home() {
   const [username, setUsername] = useState("");
   const [season, setSeason] = useState(String(new Date().getFullYear()));
@@ -119,70 +130,95 @@ export default function Home() {
       </section>
 
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 64px" }}>
-        <div style={pricingCard}>
-          <div style={{ fontSize: 13, color: "#e0645a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
-            Founding price
-          </div>
-          <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>{PRICE_LABEL}</div>
-          <div style={{ color: "#9a9691", marginBottom: 24 }}>
-            One-time, for your league&rsquo;s whole season. No subscription.
-          </div>
+        {!selected && (
+          <div style={pricingCard}>
+            <div style={{ fontSize: 13, color: "#e0645a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+              Founding price
+            </div>
+            <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>{PRICE_LABEL}</div>
+            <div style={{ color: "#9a9691", marginBottom: 24 }}>
+              One-time, for your league&rsquo;s whole season. No subscription.
+            </div>
 
-          {!selected && (
-            <>
-              <label style={label}>Sleeper username</label>
-              <input
-                style={input}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. Davidfulkerson05"
-                onKeyDown={(e) => e.key === "Enter" && findLeagues()}
-              />
-              <label style={label}>Season</label>
-              <input style={input} value={season} onChange={(e) => setSeason(e.target.value)} />
-              <button style={button} onClick={findLeagues} disabled={loading}>
-                {loading ? "Looking..." : "Find my leagues"}
-              </button>
+            <label style={label}>Sleeper username</label>
+            <input
+              style={input}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="e.g. Davidfulkerson05"
+              onKeyDown={(e) => e.key === "Enter" && findLeagues()}
+            />
+            <label style={label}>Season</label>
+            <input style={input} value={season} onChange={(e) => setSeason(e.target.value)} />
+            <button style={button} onClick={findLeagues} disabled={loading}>
+              {loading ? "Looking..." : "Find my leagues"}
+            </button>
 
-              {leagues && leagues.length === 0 && (
-                <p style={{ color: "#9a9691", marginTop: 12 }}>No leagues found for that username/season.</p>
-              )}
-              {leagues && leagues.length > 0 && (
-                <div style={{ marginTop: 20 }}>
-                  <p style={label}>Pick your league</p>
-                  {leagues.map((l) => (
-                    <button key={l.league_id} style={leagueRow} onClick={() => setSelected(l)}>
-                      {l.name} <span style={{ color: "#6f6b66" }}>({l.season})</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {selected && (
-            <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <div>
-                  <div style={{ fontWeight: 600 }}>{selected.name}</div>
-                  <div style={{ color: "#6f6b66", fontSize: 13 }}>{selected.season}</div>
-                </div>
-                <button style={linkButton} onClick={() => setSelected(null)}>
-                  change league
-                </button>
+            {leagues && leagues.length === 0 && (
+              <p style={{ color: "#9a9691", marginTop: 12 }}>No leagues found for that username/season.</p>
+            )}
+            {leagues && leagues.length > 0 && (
+              <div style={{ marginTop: 20 }}>
+                <p style={label}>Pick your league</p>
+                {leagues.map((l) => (
+                  <button key={l.league_id} style={leagueRow} onClick={() => setSelected(l)}>
+                    {l.name} <span style={{ color: "#6f6b66" }}>({l.season})</span>
+                  </button>
+                ))}
               </div>
-              <button style={button} onClick={buy} disabled={buying}>
-                {buying ? "Redirecting to checkout..." : `Buy Season Pass — ${PRICE_LABEL}`}
-              </button>
-              <p style={{ color: "#6f6b66", fontSize: 12, marginTop: 8 }}>
-                You&rsquo;ll enter your email on the payment screen — your access link is shown
-                immediately after and emailed to you too.
-              </p>
-            </>
-          )}
+            )}
 
-          {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
-        </div>
+            {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+          </div>
+        )}
+
+        {selected && (
+          <div style={{ position: "relative" }}>
+            {/* Teaser: a mock of the actual generator, blurred and inert — shows
+                there's a real thing waiting on the other side of the paywall. */}
+            <div style={previewPane} aria-hidden="true">
+              <div style={{ fontWeight: 600, marginBottom: 2 }}>{selected.name}</div>
+              <div style={{ color: "#6f6b66", fontSize: 13, marginBottom: 16 }}>{selected.season}</div>
+              <label style={label}>Week</label>
+              <input style={{ ...input, width: 80 }} value={1} readOnly tabIndex={-1} />
+              <button style={button} tabIndex={-1}>
+                Generate Week 1
+              </button>
+              <pre style={{ ...messageBox, marginTop: 24 }}>{PREVIEW_TEXT(selected.name)}</pre>
+            </div>
+
+            <div style={overlayBackdrop}>
+              <div style={{ ...pricingCard, width: "100%", maxWidth: 380, boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}>
+                <div style={{ fontSize: 13, color: "#e0645a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+                  Founding price
+                </div>
+                <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>{PRICE_LABEL}</div>
+                <div style={{ color: "#9a9691", marginBottom: 20 }}>
+                  One-time, for your league&rsquo;s whole season. No subscription.
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{selected.name}</div>
+                    <div style={{ color: "#6f6b66", fontSize: 13 }}>{selected.season}</div>
+                  </div>
+                  <button style={linkButton} onClick={() => setSelected(null)}>
+                    change league
+                  </button>
+                </div>
+                <button style={button} onClick={buy} disabled={buying}>
+                  {buying ? "Redirecting to checkout..." : `Unlock Season Pass — ${PRICE_LABEL}`}
+                </button>
+                <p style={{ color: "#6f6b66", fontSize: 12, marginTop: 8 }}>
+                  You&rsquo;ll enter your email on the payment screen — your access link is shown
+                  immediately after and emailed to you too.
+                </p>
+
+                {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       <footer style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 48px", color: "#6f6b66", fontSize: 13 }}>
@@ -270,4 +306,25 @@ const pricingCard: React.CSSProperties = {
   border: "1px solid #2a2a2c",
   borderRadius: 12,
   padding: 28,
+};
+
+const previewPane: React.CSSProperties = {
+  background: "#151516",
+  border: "1px solid #2a2a2c",
+  borderRadius: 12,
+  padding: 28,
+  filter: "blur(5px)",
+  userSelect: "none",
+  pointerEvents: "none",
+};
+
+const overlayBackdrop: React.CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 12,
+  background: "rgba(11, 11, 12, 0.55)",
+  borderRadius: 12,
 };
