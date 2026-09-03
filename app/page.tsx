@@ -237,7 +237,7 @@ export default function Home() {
               style={input}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. Davidfulkerson05"
+              placeholder="e.g. gridiron_gary"
               onKeyDown={(e) => e.key === "Enter" && findLeagues()}
             />
             <label style={label}>Season</label>
