@@ -15,12 +15,14 @@ export interface TokenRecord {
   leagueId: string;
   leagueName: string;
   email: string;
+  isElimination: boolean;
 }
 
 export interface LeaguePaidRecord {
   token: string;
   email: string;
   purchasedAt: number;
+  isElimination: boolean;
 }
 
 export interface CachedWeek {
@@ -45,14 +47,16 @@ export async function saveAccessGrant(params: {
   leagueName: string;
   email: string;
   token: string;
+  isElimination: boolean;
 }) {
-  const { leagueId, leagueName, email, token } = params;
+  const { leagueId, leagueName, email, token, isElimination } = params;
   await Promise.all([
-    redis.set(tokenKey(token), { leagueId, leagueName, email } satisfies TokenRecord),
+    redis.set(tokenKey(token), { leagueId, leagueName, email, isElimination } satisfies TokenRecord),
     redis.set(paidKey(leagueId), {
       token,
       email,
       purchasedAt: Date.now(),
+      isElimination,
     } satisfies LeaguePaidRecord),
   ]);
 }

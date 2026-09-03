@@ -28,5 +28,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ready: false });
   }
 
-  return NextResponse.json({ ready: true, token: paid.token, leagueName });
+  return NextResponse.json({
+    ready: true,
+    token: paid.token,
+    leagueName,
+    isElimination: paid.isElimination,
+  });
 }

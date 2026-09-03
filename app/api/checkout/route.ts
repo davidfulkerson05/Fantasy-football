@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/stripe";
 import { getLeaguePaidRecord } from "@/lib/db";
 import { checkoutRatelimit, clientIp, safeLimit } from "@/lib/ratelimit";
 import { FOUNDING_PRICE_CENTS, CURRENCY } from "@/lib/pricing";
+import { getLeague } from "@/lib/sleeper";
 
 // POST { leagueId, leagueName, email? } -> { url } to redirect to Stripe Checkout.
 export async function POST(req: NextRequest) {
@@ -31,6 +32,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Determined once, up front, so every downstream surface (email, success
+  // page, the generator itself) can just read a stored flag instead of
+  // re-deriving the league's format from Sleeper each time.
+  const league = await getLeague(leagueId);
+  const isElimination = league.settings?.type === 3;
+  const productName = isElimination
+    ? `The Guillotine — Season Pass (${leagueName})`
+    : `League Update — Season Pass (${leagueName})`;
+
   const origin = new URL(req.url).origin;
 
   const session = await getStripe().checkout.sessions.create({
@@ -41,14 +51,14 @@ export async function POST(req: NextRequest) {
           currency: CURRENCY,
           unit_amount: FOUNDING_PRICE_CENTS,
           product_data: {
-            name: `The Guillotine — Season Pass (${leagueName})`,
+            name: productName,
             description: "Unlimited weekly recap messages for this league, for the season.",
           },
         },
         quantity: 1,
       },
     ],
-    metadata: { leagueId, leagueName },
+    metadata: { leagueId, leagueName, isElimination: String(isElimination) },
     customer_email: email || undefined,
     success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/`,

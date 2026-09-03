@@ -29,16 +29,17 @@ export async function POST(req: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
     const leagueId = session.metadata?.leagueId;
     const leagueName = session.metadata?.leagueName;
+    const isElimination = session.metadata?.isElimination === "true";
     const email = session.customer_details?.email || session.customer_email;
 
     if (leagueId && leagueName && email) {
       const token = nanoid(24);
-      await saveAccessGrant({ leagueId, leagueName, email, token });
+      await saveAccessGrant({ leagueId, leagueName, email, token, isElimination });
 
       const origin = new URL(req.url).origin;
       const link = `${origin}/app?token=${token}`;
       try {
-        await sendAccessEmail(email, leagueName, link);
+        await sendAccessEmail(email, leagueName, link, isElimination);
       } catch (err) {
         // Don't fail the webhook over a flaky email send — the success
         // page still grants access via /api/verify-session either way.

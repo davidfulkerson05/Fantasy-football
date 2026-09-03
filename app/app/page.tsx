@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "guillotine.token";
 const NAME_KEY = "guillotine.leagueName";
+const ELIMINATION_KEY = "guillotine.isElimination";
 
 export default function AppPage() {
   const [token, setToken] = useState<string | null>(null);
   const [leagueName, setLeagueName] = useState<string | null>(null);
+  const [isElimination, setIsElimination] = useState<boolean | null>(null);
   const [week, setWeek] = useState(1);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,16 +20,32 @@ export default function AppPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get("token");
-    if (urlToken) {
-      localStorage.setItem(STORAGE_KEY, urlToken);
-      setToken(urlToken);
-    } else {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setToken(saved);
-    }
+    const resolvedToken = urlToken || localStorage.getItem(STORAGE_KEY);
+    if (urlToken) localStorage.setItem(STORAGE_KEY, urlToken);
+    if (resolvedToken) setToken(resolvedToken);
+
     const savedName = localStorage.getItem(NAME_KEY);
     if (savedName) setLeagueName(savedName);
+    const savedElimination = localStorage.getItem(ELIMINATION_KEY);
+    if (savedElimination !== null) setIsElimination(savedElimination === "true");
     setCheckedStorage(true);
+
+    // Authoritative source, since opening the emailed link directly skips
+    // the success page (which is what normally writes these to storage).
+    if (resolvedToken) {
+      fetch(`/api/league-info?token=${encodeURIComponent(resolvedToken)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data) return;
+          setLeagueName(data.leagueName);
+          setIsElimination(!!data.isElimination);
+          localStorage.setItem(NAME_KEY, data.leagueName);
+          localStorage.setItem(ELIMINATION_KEY, String(!!data.isElimination));
+        })
+        .catch(() => {
+          // Non-fatal — falls back to whatever storage already had, if anything.
+        });
+    }
   }, []);
 
   async function generate(regenerate = false) {
@@ -61,7 +79,7 @@ export default function AppPage() {
   if (checkedStorage && !token) {
     return (
       <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
-        <h1 style={{ fontSize: 28, marginBottom: 4 }}>The Guillotine</h1>
+        <h1 style={{ fontSize: 28, marginBottom: 4 }}>Recapped</h1>
         <p style={{ color: "#9a9691" }}>
           No access link found. You need a season pass to use this — head back to{" "}
           <a href="/" style={{ color: "#e0645a" }}>
@@ -73,9 +91,11 @@ export default function AppPage() {
     );
   }
 
+  const voiceName = isElimination ? "The Guillotine" : "League Update";
+
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 4 }}>The Guillotine</h1>
+      <h1 style={{ fontSize: 28, marginBottom: 4 }}>{voiceName}</h1>
       <p style={{ color: "#9a9691", marginTop: 0, marginBottom: 32 }}>
         {leagueName || "Your league"}
       </p>
@@ -90,7 +110,7 @@ export default function AppPage() {
         onChange={(e) => setWeek(parseInt(e.target.value, 10) || 1)}
       />
       <button style={button} onClick={() => generate(false)} disabled={loading}>
-        {loading ? "Sharpening..." : `Generate Week ${week}`}
+        {loading ? (isElimination ? "Sharpening..." : "Writing...") : `Generate Week ${week}`}
       </button>
 
       {message && (

@@ -6,6 +6,7 @@ export default function SuccessPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [link, setLink] = useState("");
   const [leagueName, setLeagueName] = useState("");
+  const [isElimination, setIsElimination] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -29,8 +30,10 @@ export default function SuccessPage() {
           const url = `${window.location.origin}/app?token=${data.token}`;
           localStorage.setItem("guillotine.token", data.token);
           localStorage.setItem("guillotine.leagueName", data.leagueName);
+          localStorage.setItem("guillotine.isElimination", String(data.isElimination));
           setLink(url);
           setLeagueName(data.leagueName);
+          setIsElimination(!!data.isElimination);
           setStatus("ready");
           return;
         }
@@ -54,9 +57,11 @@ export default function SuccessPage() {
     setTimeout(() => setCopied(false), 1500);
   }
 
+  const voiceName = isElimination ? "The Guillotine" : "League Update";
+
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 4 }}>The Guillotine</h1>
+      <h1 style={{ fontSize: 28, marginBottom: 4 }}>{status === "ready" ? voiceName : "Recapped"}</h1>
 
       {status === "loading" && (
         <p style={{ color: "#9a9691" }}>Finalizing your access...</p>
@@ -75,7 +80,7 @@ export default function SuccessPage() {
                 {copied ? "Copied!" : "Copy link"}
               </button>
               <a href={link} style={{ ...button, textDecoration: "none", display: "inline-block" }}>
-                Open The Guillotine
+                Open {voiceName}
               </a>
             </div>
           </div>
