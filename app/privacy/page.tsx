@@ -1,6 +1,6 @@
 export default function Privacy() {
   return (
-    <main style={{ maxWidth: 640, margin: "0 auto", padding: "48px 20px", color: "#c7c3be" }}>
+    <main style={{ maxWidth: 640, margin: "0 auto", padding: "48px 20px", color: "#3a362f" }}>
       <h1 style={{ fontSize: 28, marginBottom: 20 }}>Privacy</h1>
       <p>
         We store the minimum needed to run your season pass: your league ID, the email address you

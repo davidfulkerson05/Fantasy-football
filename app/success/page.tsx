@@ -61,15 +61,15 @@ export default function SuccessPage() {
 
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 4 }}>{status === "ready" ? voiceName : "Recapped"}</h1>
+      <h1 style={{ fontSize: 28, marginBottom: 4 }}>{status === "ready" ? voiceName : "League Update"}</h1>
 
       {status === "loading" && (
-        <p style={{ color: "#9a9691" }}>Finalizing your access...</p>
+        <p style={{ color: "#57524a" }}>Finalizing your access...</p>
       )}
 
       {status === "ready" && (
         <>
-          <p style={{ color: "#9a9691" }}>
+          <p style={{ color: "#57524a" }}>
             Payment received. {leagueName}&rsquo;s season pass is active — we&rsquo;ve also emailed this
             link to you as a backup.
           </p>
@@ -88,7 +88,7 @@ export default function SuccessPage() {
       )}
 
       {status === "error" && (
-        <p style={{ color: "#e0645a" }}>
+        <p style={{ color: "#c2410c" }}>
           Couldn&rsquo;t confirm your payment yet. Check your email for the access link — if it
           doesn&rsquo;t arrive shortly, get in touch and we&rsquo;ll sort it out.
         </p>
@@ -99,7 +99,7 @@ export default function SuccessPage() {
 
 const button: React.CSSProperties = {
   padding: "10px 18px",
-  background: "#8a1c1c",
+  background: "#c2410c",
   border: "none",
   borderRadius: 6,
   color: "#fff",
@@ -113,8 +113,8 @@ const messageBox: React.CSSProperties = {
   fontFamily: "inherit",
   fontSize: 14,
   lineHeight: 1.6,
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 6,
   padding: 16,
   marginBottom: 12,

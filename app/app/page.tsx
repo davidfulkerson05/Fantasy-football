@@ -79,10 +79,10 @@ export default function AppPage() {
   if (checkedStorage && !token) {
     return (
       <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
-        <h1 style={{ fontSize: 28, marginBottom: 4 }}>Recapped</h1>
-        <p style={{ color: "#9a9691" }}>
+        <h1 style={{ fontSize: 28, marginBottom: 4 }}>League Update</h1>
+        <p style={{ color: "#57524a" }}>
           No access link found. You need a season pass to use this — head back to{" "}
-          <a href="/" style={{ color: "#e0645a" }}>
+          <a href="/" style={{ color: "#c2410c" }}>
             the homepage
           </a>{" "}
           to get one, or use the link that was emailed to you.
@@ -96,7 +96,7 @@ export default function AppPage() {
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "48px 20px" }}>
       <h1 style={{ fontSize: 28, marginBottom: 4 }}>{voiceName}</h1>
-      <p style={{ color: "#9a9691", marginTop: 0, marginBottom: 32 }}>
+      <p style={{ color: "#57524a", marginTop: 0, marginBottom: 32 }}>
         {leagueName || "Your league"}
       </p>
 
@@ -127,7 +127,7 @@ export default function AppPage() {
         </div>
       )}
 
-      {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+      {error && <p style={{ color: "#c2410c", marginTop: 16 }}>{error}</p>}
     </main>
   );
 }
@@ -135,7 +135,7 @@ export default function AppPage() {
 const label: React.CSSProperties = {
   display: "block",
   fontSize: 13,
-  color: "#9a9691",
+  color: "#57524a",
   marginTop: 16,
   marginBottom: 6,
 };
@@ -145,17 +145,17 @@ const input: React.CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
   padding: "10px 12px",
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 6,
-  color: "#e8e6e3",
+  color: "#211f1c",
   fontSize: 15,
 };
 
 const button: React.CSSProperties = {
   marginTop: 16,
   padding: "10px 18px",
-  background: "#8a1c1c",
+  background: "#c2410c",
   border: "none",
   borderRadius: 6,
   color: "#fff",
@@ -165,7 +165,8 @@ const button: React.CSSProperties = {
 
 const secondaryButton: React.CSSProperties = {
   ...button,
-  background: "#2a2a2c",
+  background: "#e4e0d8",
+  color: "#211f1c",
 };
 
 const messageBox: React.CSSProperties = {
@@ -173,9 +174,10 @@ const messageBox: React.CSSProperties = {
   fontFamily: "inherit",
   fontSize: 15,
   lineHeight: 1.6,
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 6,
   padding: 16,
   marginBottom: 12,
+  color: "#2a2723",
 };

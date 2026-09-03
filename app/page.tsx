@@ -139,12 +139,12 @@ export default function Home() {
   return (
     <main>
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "64px 20px 40px" }}>
-        <h1 style={{ fontSize: 40, marginBottom: 12, lineHeight: 1.1 }}>Recapped</h1>
-        <p style={{ color: "#c7c3be", fontSize: 18, marginTop: 0, marginBottom: 8 }}>
-          AI-written weekly recap messages for your Sleeper fantasy football league — ready to
-          paste straight into the group chat, every week.
+        <h1 style={{ fontSize: 40, marginBottom: 12, lineHeight: 1.1 }}>League Update</h1>
+        <p style={{ color: "#3a362f", fontSize: 18, marginTop: 0, marginBottom: 8 }}>
+          Weekly recap messages for your Sleeper fantasy football league — ready to paste
+          straight into the group chat, every week.
         </p>
-        <p style={{ color: "#6f6b66", fontSize: 15 }}>
+        <p style={{ color: "#8c8579", fontSize: 15 }}>
           Works with any Sleeper league. Redraft, dynasty, or full-on elimination — we detect your
           league&rsquo;s format automatically and write in the right voice. No account setup, just
           your league.
@@ -152,12 +152,12 @@ export default function Home() {
       </section>
 
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 48px" }}>
-        <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>
+        <div style={{ color: "#8c8579", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>
           See it in action
         </div>
         {REDRAFT_EXAMPLES.map((ex) => (
           <div key={ex.week} style={{ marginBottom: 20 }}>
-            <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+            <div style={{ color: "#8c8579", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
               {ex.week} — sample output
             </div>
             <pre style={messageBox}>{ex.text}</pre>
@@ -167,13 +167,13 @@ export default function Home() {
 
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 48px" }}>
         <h2 style={{ fontSize: 24, marginBottom: 8 }}>Running a guillotine or elimination league?</h2>
-        <p style={{ color: "#9a9691", fontSize: 15, marginTop: 0, marginBottom: 20 }}>
+        <p style={{ color: "#57524a", fontSize: 15, marginTop: 0, marginBottom: 20 }}>
           Same tool, a much darker voice. The Guillotine is a personified blade that tracks who
           gets chopped each week — merciless, specific, and just as ready to paste.
         </p>
         {GUILLOTINE_EXAMPLES.map((ex) => (
           <div key={ex.week} style={{ marginBottom: 20 }}>
-            <div style={{ color: "#6f6b66", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+            <div style={{ color: "#8c8579", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
               {ex.week} — sample output
             </div>
             <pre style={messageBox}>{ex.text}</pre>
@@ -184,11 +184,11 @@ export default function Home() {
       <section style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 64px" }}>
         {!selected && (
           <div style={pricingCard}>
-            <div style={{ fontSize: 13, color: "#e0645a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+            <div style={{ fontSize: 13, color: "#c2410c", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
               Founding price
             </div>
             <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>{PRICE_LABEL}</div>
-            <div style={{ color: "#9a9691", marginBottom: 24 }}>
+            <div style={{ color: "#57524a", marginBottom: 24 }}>
               One-time, for your league&rsquo;s whole season. No subscription.
             </div>
 
@@ -207,20 +207,20 @@ export default function Home() {
             </button>
 
             {leagues && leagues.length === 0 && (
-              <p style={{ color: "#9a9691", marginTop: 12 }}>No leagues found for that username/season.</p>
+              <p style={{ color: "#57524a", marginTop: 12 }}>No leagues found for that username/season.</p>
             )}
             {leagues && leagues.length > 0 && (
               <div style={{ marginTop: 20 }}>
                 <p style={label}>Pick your league</p>
                 {leagues.map((l) => (
                   <button key={l.league_id} style={leagueRow} onClick={() => setSelected(l)}>
-                    {l.name} <span style={{ color: "#6f6b66" }}>({l.season})</span>
+                    {l.name} <span style={{ color: "#8c8579" }}>({l.season})</span>
                   </button>
                 ))}
               </div>
             )}
 
-            {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+            {error && <p style={{ color: "#c2410c", marginTop: 16 }}>{error}</p>}
           </div>
         )}
 
@@ -230,7 +230,7 @@ export default function Home() {
                 there's a real thing waiting on the other side of the paywall. */}
             <div style={previewPane} aria-hidden="true">
               <div style={{ fontWeight: 600, marginBottom: 2 }}>{selected.name}</div>
-              <div style={{ color: "#6f6b66", fontSize: 13, marginBottom: 16 }}>{selected.season}</div>
+              <div style={{ color: "#8c8579", fontSize: 13, marginBottom: 16 }}>{selected.season}</div>
               <label style={label}>Week</label>
               <input style={{ ...input, width: 80 }} value={1} readOnly tabIndex={-1} />
               <button style={button} tabIndex={-1}>
@@ -241,18 +241,18 @@ export default function Home() {
 
             <div style={overlayBackdrop}>
               <div style={{ ...pricingCard, width: "100%", maxWidth: 380, boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}>
-                <div style={{ fontSize: 13, color: "#e0645a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+                <div style={{ fontSize: 13, color: "#c2410c", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
                   Founding price
                 </div>
                 <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>{PRICE_LABEL}</div>
-                <div style={{ color: "#9a9691", marginBottom: 20 }}>
+                <div style={{ color: "#57524a", marginBottom: 20 }}>
                   One-time, for your league&rsquo;s whole season. No subscription.
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                   <div>
                     <div style={{ fontWeight: 600 }}>{selected.name}</div>
-                    <div style={{ color: "#6f6b66", fontSize: 13 }}>{selected.season}</div>
+                    <div style={{ color: "#8c8579", fontSize: 13 }}>{selected.season}</div>
                   </div>
                   <button style={linkButton} onClick={() => setSelected(null)}>
                     change league
@@ -261,23 +261,23 @@ export default function Home() {
                 <button style={button} onClick={buy} disabled={buying}>
                   {buying ? "Redirecting to checkout..." : `Unlock Season Pass — ${PRICE_LABEL}`}
                 </button>
-                <p style={{ color: "#6f6b66", fontSize: 12, marginTop: 8 }}>
+                <p style={{ color: "#8c8579", fontSize: 12, marginTop: 8 }}>
                   You&rsquo;ll enter your email on the payment screen — your access link is shown
                   immediately after and emailed to you too.
                 </p>
 
-                {error && <p style={{ color: "#e0645a", marginTop: 16 }}>{error}</p>}
+                {error && <p style={{ color: "#c2410c", marginTop: 16 }}>{error}</p>}
               </div>
             </div>
           </div>
         )}
       </section>
 
-      <footer style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 48px", color: "#6f6b66", fontSize: 13 }}>
-        <a href="/terms" style={{ color: "#6f6b66", marginRight: 16 }}>
+      <footer style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 48px", color: "#8c8579", fontSize: 13 }}>
+        <a href="/terms" style={{ color: "#8c8579", marginRight: 16 }}>
           Terms
         </a>
-        <a href="/privacy" style={{ color: "#6f6b66" }}>
+        <a href="/privacy" style={{ color: "#8c8579" }}>
           Privacy
         </a>
       </footer>
@@ -288,7 +288,7 @@ export default function Home() {
 const label: React.CSSProperties = {
   display: "block",
   fontSize: 13,
-  color: "#9a9691",
+  color: "#57524a",
   marginTop: 16,
   marginBottom: 6,
 };
@@ -298,17 +298,17 @@ const input: React.CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
   padding: "10px 12px",
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 6,
-  color: "#e8e6e3",
+  color: "#211f1c",
   fontSize: 15,
 };
 
 const button: React.CSSProperties = {
   marginTop: 16,
   padding: "12px 20px",
-  background: "#8a1c1c",
+  background: "#c2410c",
   border: "none",
   borderRadius: 6,
   color: "#fff",
@@ -321,7 +321,7 @@ const button: React.CSSProperties = {
 const linkButton: React.CSSProperties = {
   background: "none",
   border: "none",
-  color: "#9a9691",
+  color: "#57524a",
   textDecoration: "underline",
   cursor: "pointer",
   fontSize: 13,
@@ -333,10 +333,10 @@ const leagueRow: React.CSSProperties = {
   textAlign: "left",
   padding: "10px 12px",
   marginBottom: 8,
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 6,
-  color: "#e8e6e3",
+  color: "#211f1c",
   fontSize: 15,
   cursor: "pointer",
 };
@@ -346,23 +346,23 @@ const messageBox: React.CSSProperties = {
   fontFamily: "inherit",
   fontSize: 15,
   lineHeight: 1.6,
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 6,
   padding: 16,
-  color: "#d8d4cf",
+  color: "#2a2723",
 };
 
 const pricingCard: React.CSSProperties = {
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 12,
   padding: 28,
 };
 
 const previewPane: React.CSSProperties = {
-  background: "#151516",
-  border: "1px solid #2a2a2c",
+  background: "#ffffff",
+  border: "1px solid #e4e0d8",
   borderRadius: 12,
   padding: 28,
   filter: "blur(5px)",
@@ -377,6 +377,6 @@ const overlayBackdrop: React.CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   padding: 12,
-  background: "rgba(11, 11, 12, 0.55)",
+  background: "rgba(247, 245, 241, 0.8)",
   borderRadius: 12,
 };

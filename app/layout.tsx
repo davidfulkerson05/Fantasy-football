@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Recapped",
+  title: "League Update",
   description:
-    "AI-written weekly recap messages for your Sleeper fantasy football league — ready to paste into the group chat.",
+    "Weekly recap messages for your Sleeper fantasy football league — ready to paste into the group chat.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -14,8 +14,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           margin: 0,
           fontFamily:
             "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-          background: "#0b0b0c",
-          color: "#e8e6e3",
+          background: "#f7f5f1",
+          color: "#211f1c",
           minHeight: "100vh",
         }}
       >
