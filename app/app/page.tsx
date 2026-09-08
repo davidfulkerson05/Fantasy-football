@@ -11,6 +11,7 @@ export default function AppPage() {
   const [leagueName, setLeagueName] = useState<string | null>(null);
   const [isElimination, setIsElimination] = useState<boolean | null>(null);
   const [week, setWeek] = useState(1);
+  const [mode, setMode] = useState<"draft" | "week">("draft");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -54,8 +55,10 @@ export default function AppPage() {
     setMessage("");
     setLoading(true);
     try {
+      const query =
+        mode === "draft" ? `draft=1` : `week=${week}`;
       const res = await fetch(
-        `/api/generate?token=${encodeURIComponent(token)}&week=${week}${regenerate ? "&regenerate=1" : ""}`
+        `/api/generate?token=${encodeURIComponent(token)}&${query}${regenerate ? "&regenerate=1" : ""}`
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong");
@@ -100,17 +103,56 @@ export default function AppPage() {
         {leagueName || "Your league"}
       </p>
 
-      <label style={label}>Week</label>
-      <input
-        style={{ ...input, width: 80 }}
-        type="number"
-        min={1}
-        max={18}
-        value={week}
-        onChange={(e) => setWeek(parseInt(e.target.value, 10) || 1)}
-      />
+      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+        <button
+          style={mode === "draft" ? tabActive : tabInactive}
+          onClick={() => {
+            setMode("draft");
+            setMessage("");
+            setError("");
+          }}
+        >
+          Draft recap
+        </button>
+        <button
+          style={mode === "week" ? tabActive : tabInactive}
+          onClick={() => {
+            setMode("week");
+            setMessage("");
+            setError("");
+          }}
+        >
+          Weekly recap
+        </button>
+      </div>
+
+      {mode === "draft" ? (
+        <p style={{ color: "#57524a", fontSize: 14, marginTop: 12, marginBottom: 0 }}>
+          No scores yet — this one's built from your league&rsquo;s draft picks. Great for
+          sending right after purchase, before Week 1 kicks off.
+        </p>
+      ) : (
+        <>
+          <label style={label}>Week</label>
+          <input
+            style={{ ...input, width: 80 }}
+            type="number"
+            min={1}
+            max={18}
+            value={week}
+            onChange={(e) => setWeek(parseInt(e.target.value, 10) || 1)}
+          />
+        </>
+      )}
+
       <button style={button} onClick={() => generate(false)} disabled={loading}>
-        {loading ? (isElimination ? "Sharpening..." : "Writing...") : `Generate Week ${week}`}
+        {loading
+          ? isElimination
+            ? "Sharpening..."
+            : "Writing..."
+          : mode === "draft"
+            ? "Generate draft recap"
+            : `Generate Week ${week}`}
       </button>
 
       {message && (
@@ -167,6 +209,27 @@ const secondaryButton: React.CSSProperties = {
   ...button,
   background: "#e4e0d8",
   color: "#211f1c",
+};
+
+const tabBase: React.CSSProperties = {
+  padding: "8px 16px",
+  borderRadius: 999,
+  fontSize: 14,
+  cursor: "pointer",
+  border: "1px solid #e4e0d8",
+};
+
+const tabActive: React.CSSProperties = {
+  ...tabBase,
+  background: "#c2410c",
+  borderColor: "#c2410c",
+  color: "#fff",
+};
+
+const tabInactive: React.CSSProperties = {
+  ...tabBase,
+  background: "#ffffff",
+  color: "#57524a",
 };
 
 const messageBox: React.CSSProperties = {

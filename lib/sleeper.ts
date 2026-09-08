@@ -81,3 +81,31 @@ export function getMatchups(leagueId: string, week: number) {
 export function getNflState() {
   return get<{ week: number; season: string; season_type: string }>(`/state/nfl`);
 }
+
+export interface SleeperDraft {
+  draft_id: string;
+  status: string;
+  season: string;
+  settings?: { rounds?: number };
+}
+
+export interface SleeperDraftPick {
+  pick_no: number;
+  round: number;
+  roster_id: number;
+  player_id: string;
+  metadata?: {
+    first_name?: string;
+    last_name?: string;
+    position?: string;
+    team?: string;
+  };
+}
+
+export function getDrafts(leagueId: string) {
+  return get<SleeperDraft[]>(`/league/${leagueId}/drafts`);
+}
+
+export function getDraftPicks(draftId: string) {
+  return get<SleeperDraftPick[]>(`/draft/${draftId}/picks`);
+}
