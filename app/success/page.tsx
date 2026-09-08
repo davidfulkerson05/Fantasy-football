@@ -78,7 +78,7 @@ export default function SuccessPage() {
         <>
           <p style={{ color: "#57524a" }}>
             Payment received. {leagueName}&rsquo;s season pass is active — we&rsquo;ve also emailed this
-            link to you as a backup.
+            link to you as a backup (check spam/promotions if it doesn&rsquo;t show up in a minute).
           </p>
           <div style={{ marginTop: 20 }}>
             <pre style={messageBox}>{link}</pre>

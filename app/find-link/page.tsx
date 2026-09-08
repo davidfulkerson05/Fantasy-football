@@ -96,7 +96,8 @@ export default function FindLinkPage() {
           </div>
           {sent[l.league_id] ? (
             <p style={{ color: "#57524a", fontSize: 14, marginTop: 12, marginBottom: 0 }}>
-              If we have a season pass on file for this league and email, the link is on its way.
+              If we have a season pass on file for this league and email, the link is on its way —
+              check spam/promotions if it doesn&rsquo;t show up in a minute.
             </p>
           ) : (
             <>
