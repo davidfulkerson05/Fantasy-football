@@ -316,6 +316,9 @@ export default function Home() {
       </section>
 
       <footer style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 48px", color: "#8c8579", fontSize: 13 }}>
+        <a href="/find-link" style={{ color: "#8c8579", marginRight: 16 }}>
+          Lost your link?
+        </a>
         <a href="/terms" style={{ color: "#8c8579", marginRight: 16 }}>
           Terms
         </a>

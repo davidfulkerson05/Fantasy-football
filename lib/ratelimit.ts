@@ -15,6 +15,14 @@ export const checkoutRatelimit = new Ratelimit({
   prefix: "ratelimit:checkout",
 });
 
+// Tighter window — this one sends an email per success, so it's the most
+// worth protecting from being hammered.
+export const resendLinkRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 h"),
+  prefix: "ratelimit:resend-link",
+});
+
 export function clientIp(req: Request): string {
   const fwd = req.headers.get("x-forwarded-for");
   return fwd?.split(",")[0]?.trim() || "unknown";
