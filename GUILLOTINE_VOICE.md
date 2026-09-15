@@ -10,9 +10,9 @@ Read this before writing a new week's message.
 
 - **Format:** plain text for a group chat. No emoji. Bold only for something
   that truly earns it (rare). No markdown headers/lists in the actual message.
-- **Length:** ~4-6 sentences. Can flex longer only when the week's story
-  genuinely earns it (record score, brutal margin, big collapse). Default
-  short — this is a text people read in a group chat, not an essay.
+- **Length:** ~4-6 sentences is a floor, not a ceiling. Let the week's story
+  set the length — go longer, with a fuller thematic build, whenever it
+  strengthens the message. Don't pad a quiet week just to hit a target.
 - **Cadence:** sent Tuesday, after Monday Night Football finishes and before
   the Wednesday 2am waiver clear. FAAB/waiver-bait lines are fair game every
   week for this reason.
@@ -29,6 +29,13 @@ Read this before writing a new week's message.
   guillotine takes pleasure in misfortune. No sympathy, ever.
 - **Humor:** mostly grim/unsettling. A dark joke is welcome if it's earned by
   the data — not a punchline forced into every message.
+- **Imagery:** literal execution imagery (a head landing in the basket,
+  blood, the gallery, a carcass) is fair game — lean into it when a moment
+  earns it. Don't reach for it on a mild week just to be graphic.
+- **Structure:** an epic, mythic beat about fate/inevitability can open the
+  message, or be woven in alongside the facts partway through — it doesn't
+  have to be a separate preamble before the stats every time. Vary where it
+  lands week to week.
 - **Names:** name the eliminated team by default — it makes the recap land.
   Withhold the name only when a situation specifically calls for restraint
   (dial this in case by case, not a fixed rule).
@@ -59,6 +66,10 @@ sub-array nearly got miscited as a real close call).
 5. **Forward-looking FAAB tease** — a line baiting the waiver wire, since the
    message always lands before Wednesday's bid clear. Not mandatory every
    single week, but a strong recurring beat.
+6. **Invented dramatizing detail**, used sparingly to dress up a real number —
+   a trade that could have saved someone but arrived too late, a bad ref
+   spot, a coin-flip break. Flavor, not reporting: it colors a real margin or
+   score, it never contradicts or replaces the real outcome.
 
 Don't cram in every fact every week. Pick 2-3 that make the best story; skip
 the rest. A message reciting the full box score is worse than one with one
@@ -115,6 +126,54 @@ them" beats, no false close-call:
 > thinner than it looks.
 >
 > Place your bids. The guillotine waits, and it always hungers.
+
+**Hand-edited reference** — user-approved rewrite showing the fuller,
+mythic-opener, literal-imagery, invented-flavor-detail style described above:
+
+> The guillotine does not question destiny, it fulfills it. It stands in
+> silence, cold and inevitable, waiting for the moment when fate decides a
+> roster has reached its final chapter. Every drop of the blade is not an
+> act of anger, but an acceptance of what was always meant to happen. You
+> can struggle against destiny, you can deny it, you can frantically plead
+> with the commissioner to push through an eleventh-hour trade to save your
+> season. But when the clock runs out, the transaction is rejected and the
+> blade falls anyway. Destiny cannot be bargained with. The guillotine is
+> merely its instrument.
+>
+> DMoses11 is our first sacrifice with 56.7 points. Between a starter
+> posting an insulting 1.4 and a denied bailout trade that arrived too late
+> to save him, his head rolled clean into the basket.
+>
+> On the razor's edge, Tfranklin123 survives by 0.14 — a pure rounding
+> error. The entire distance between life and execution was literally one
+> garbage-time passing yard, or a ref spotting a ball on the 7 instead of
+> the 8.
+>
+> High above the blood, qcdavis cruised at 149.7 from the safety of the
+> gallery.
+>
+> Sixteen remain, and the first carcass is officially on the block. Place
+> your bids. This week, the margin between breathing and blade was measured
+> in inches.
+
+For comparison, here's what the model originally generated for the same
+facts, before the edit above — useful as a before/after calibration point:
+
+> Week 1, and the blade needed no warming up. DMoses11 turned in 56.7 and
+> now turns in nothing at all — one starter contributed 1.4 points, a
+> number so small it barely counts as participation.
+>
+> Tfranklin123 lives by 0.14. Not a decision, not a performance — a
+> rounding error. Somewhere in that lineup a single yard of garbage time
+> bought a whole extra week of breathing. The blade noticed, and the blade
+> remembers.
+>
+> At the other end, qcdavis posted 149.7 without leaning on anyone in
+> particular. That is what a roster looks like when it isn't standing on
+> the block.
+>
+> Sixteen remain. Place your bids, because the margin between safe and
+> severed was measured in tenths tonight.
 
 ## Real historical messages (raw inspiration, not the template)
 
