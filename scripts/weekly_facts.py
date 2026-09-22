@@ -90,6 +90,17 @@ def build_facts(league_dir: str, week: int) -> dict:
         share = round(best / total, 3)
         return {"best_starter_points": best, "share_of_total": share, "carried": share >= CARRIED_SHARE}
 
+    # League-wide worst individual starter performance this week, independent
+    # of who got chopped — lets a surviving team get called out for a
+    # brutal (or negative) single-player number too.
+    disaster_start = None
+    for rid in participating:
+        pts = weak_link(rid)
+        if pts is None:
+            continue
+        if disaster_start is None or pts < disaster_start["points"]:
+            disaster_start = {"roster_id": rid, "team": team_name(rosters_by_id[rid], users_by_id), "points": pts}
+
     facts = {
         "week": week,
         "chopped": {
@@ -105,6 +116,7 @@ def build_facts(league_dir: str, week: int) -> dict:
             "points": top_score,
             **({"outlier": carried_by_share(top_scorer_id)} if top_scorer_id != chopped_id else {}),
         },
+        "disaster_start": disaster_start,
         "field": [
             {"team": team_name(rosters_by_id[rid], users_by_id), "points": pts}
             for rid, pts in scores
@@ -148,6 +160,9 @@ def print_summary(facts: dict):
         o = top["outlier"]
         print(f"  -> carried by one starter: {o['best_starter_points']} pts "
               f"({o['share_of_total']:.0%} of their total)")
+    ds = facts.get("disaster_start")
+    if ds:
+        print(f"Worst starter league-wide: {ds['team']} — {ds['points']} pts")
     print(f"Teams remaining after this week: {facts['teams_remaining_after_this_week']}")
     print()
     print("Full field (low to high):")

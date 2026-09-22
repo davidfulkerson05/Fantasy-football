@@ -81,9 +81,11 @@ export async function GET(req: NextRequest) {
     } else {
       const matchups = await getMatchups(leagueId, week);
       ({ systemPrompt, userPrompt, facts } = isElimination
-        ? (() => {
+        ? await (async () => {
             const f = buildWeekFacts(week, rosters, users, matchups);
-            return { systemPrompt: GUILLOTINE_SYSTEM_PROMPT, userPrompt: buildUserPrompt(f), facts: f };
+            const history = await buildTeamHistory(leagueId, week, 6);
+            const relevant = relevantHistory(f, history);
+            return { systemPrompt: GUILLOTINE_SYSTEM_PROMPT, userPrompt: buildUserPrompt(f, relevant), facts: f };
           })()
         : await (async () => {
             const f = buildRedraftWeekFacts(week, rosters, users, matchups);

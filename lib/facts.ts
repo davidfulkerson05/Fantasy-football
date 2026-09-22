@@ -40,6 +40,11 @@ export interface WeekFacts {
     points: number;
     outlier: OutlierInfo | null;
   };
+  disaster_start: {
+    roster_id: number;
+    team: string;
+    points: number;
+  } | null;
   field: TeamScore[];
   teams_remaining_after_this_week: number;
 }
@@ -106,6 +111,19 @@ export function buildWeekFacts(
   const topEntry = scores.reduce((max, s) => (s.points > max.points ? s : max));
   const topMatchup = matchupsByRoster.get(topEntry.rid)!;
 
+  // League-wide worst individual starter performance this week — independent
+  // of who got chopped, so a team that survived can still be called out for
+  // a brutal (or negative) single-player number.
+  let disasterStart: WeekFacts["disaster_start"] = null;
+  for (const rid of participating) {
+    const m = matchupsByRoster.get(rid);
+    const worst = m ? weakestStarter(m) : null;
+    if (worst === null) continue;
+    if (!disasterStart || worst < disasterStart.points) {
+      disasterStart = { roster_id: rid, team: teamName(rostersById.get(rid)!, usersById), points: worst };
+    }
+  }
+
   const facts: WeekFacts = {
     week,
     chopped: {
@@ -121,6 +139,7 @@ export function buildWeekFacts(
       points: topEntry.points,
       outlier: topEntry.rid !== choppedId ? carriedByShare(topMatchup) : null,
     },
+    disaster_start: disasterStart,
     field: scores.map((s) => ({
       team: teamName(rostersById.get(s.rid)!, usersById),
       points: s.points,

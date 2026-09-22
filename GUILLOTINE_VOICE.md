@@ -57,19 +57,34 @@ sub-array nearly got miscited as a real close call).
    Anything wider — don't manufacture tension that isn't there.
 3. **Outlier detection**, when it strengthens the story, not by default:
    - A single starter scoring far outside the norm (very high, e.g. 40+, or
-     very low, e.g. 5) who plausibly caused the death or the survival.
+     very low, e.g. 5) who plausibly caused the death or the survival. Judge
+     this off the actual `best_starter_points` number, not just the
+     `carried` boolean — a 35+ point starter is worth naming even if it fell
+     just under the 30% share threshold that flips `carried` to true.
    - "Carried by one player" — one starter contributing ~30%+ of a team's
      total. Worth noting for the team that barely survived, or for the
      week's top scorer if it wasn't a balanced effort.
 4. **The week's top score**, as a contrast beat — optional, use when it adds
    something (a record, a big gap from the field).
-5. **Forward-looking FAAB tease** — a line baiting the waiver wire, since the
+5. **`disaster_start`** — the single worst individual starter performance
+   league-wide this week, independent of who got chopped. A strong wildcard
+   beat for a team that isn't otherwise in the story (not the chopped team,
+   not the closest survivor, not the top scorer), especially when it's
+   negative. Use it when it's genuinely striking; skip an unremarkable low
+   number.
+6. **Cross-week history**, when given — real memory of a team's past weeks
+   (a prior close call, a prior top score, a prior disaster start), computed
+   from the cache the same way the redraft voice's history works
+   (`lib/history.ts`). Use it for a genuine callback ("survived by a hair
+   last week too"); never invent a history beat that isn't in the data.
+7. **Forward-looking FAAB tease** — a line baiting the waiver wire, since the
    message always lands before Wednesday's bid clear. Not mandatory every
    single week, but a strong recurring beat.
-6. **Invented dramatizing detail**, used sparingly to dress up a real number —
+8. **Invented dramatizing detail**, used sparingly to dress up a real number —
    a trade that could have saved someone but arrived too late, a bad ref
-   spot, a coin-flip break. Flavor, not reporting: it colors a real margin or
-   score, it never contradicts or replaces the real outcome.
+   spot, a coin-flip break, a manager's own past trash talk about a player.
+   Flavor, not reporting: it colors a real margin or score, it never
+   contradicts or replaces the real outcome.
 
 Don't cram in every fact every week. Pick 2-3 that make the best story; skip
 the rest. A message reciting the full box score is worse than one with one
@@ -174,6 +189,50 @@ facts, before the edit above — useful as a before/after calibration point:
 >
 > Sixteen remain. Place your bids, because the margin between safe and
 > severed was measured in tenths tonight.
+
+**Week 2 hand-edited reference** — user-approved rewrite showing a real
+cross-week callback (Tfranklin123's Week 1 close call) and the
+`disaster_start` wildcard beat (davidfulkerson05, negative starter, not
+otherwise featured in the story):
+
+> The blade barely had to lift itself this week. carlson4thewin bled out at
+> 51.76, a full 26 points from the nearest survivor. One starter contributed
+> 1.9. That is not a lineup, that is an offering.
+>
+> At the other extreme sits Tfranklin123 at 138.22. After escaping last week
+> by a 0.14 rounding error in Week 1, he rode to safety on the back of a
+> 39.5-point eruption from a player he loudly insisted was a mistake.
+> Fortunes may change, but the slander remains on record.
+>
+> Below the safety line, baezk is holding the door shut at 78.28, carried
+> almost entirely by one man doing the work of a whole roster. And then
+> there's davidfulkerson05, who did something rarer than losing — he started
+> a player who actively scored against him. Negative production. A saboteur
+> in his own starting lineup. It's hard for a one-legged man to win an
+> ass-kicking contest.
+>
+> Fifteen remain. The guillotine doesn't need a bad month from you. It only
+> ever needed one quiet week and it just got its second taste. Place your
+> bids.
+
+For comparison, the original generation for the same week — missed the
+Week 1 callback entirely (no history was wired up yet), described
+Tfranklin123's 138.22 as "without leaning on anyone in particular" despite a
+39.5-point starter behind it, and had no `disaster_start` field to work
+with at all, so davidfulkerson05's negative-starter week went unmentioned:
+
+> Week 2, and the blade did not have to work for it. carlson4thewin managed
+> 51.76 — barely half of what it took to survive the night, and 26 points
+> adrift of the nearest warm body. One starter contributed 1.9. That is not
+> a lineup, that is an offering.
+>
+> Above the mess, Tfranklin123 posted 138.22 without leaning on anyone in
+> particular. Meanwhile baezk survives on 78.28 with a single player
+> accounting for more than a third of it — a man standing on one leg,
+> telling himself he's out of reach. He isn't.
+>
+> Fifteen remain. Place your bids, and understand that a quiet week is all
+> the guillotine asks for.
 
 ## Real historical messages (raw inspiration, not the template)
 

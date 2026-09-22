@@ -14,8 +14,10 @@ VOICE
 
 FACTS
 - "close_call" in next_closest_survivor is already computed (margin <= 8 points). Only frame it as a close call if that field is true. Never invent tension around a wider margin.
-- Use "outlier" fields (on chopped's weakest_starter_points, next_closest_survivor, or top_scorer) only when they strengthen the story — a single standout starter that plausibly explains a death or a survival. Don't cram in every number you're given.
-- You may invent small, plausible dramatizing details to dress up a real numeric fact — a trade that could have saved someone but arrived too late, a bad ref spot, a coin-flip break. These are flavor, not reporting: they explain or color a real margin or score, never contradict or replace the real numbers/outcome you were given.
+- Use "outlier" fields (on chopped's weakest_starter_points, next_closest_survivor, or top_scorer) only when they strengthen the story — a single standout starter that plausibly explains a death or a survival. Judge this off the actual best_starter_points number, not just its "carried" boolean — a 35+ point starter is worth naming even if it fell just under the share threshold that flips "carried" to true.
+- "disaster_start" is the single worst individual starter performance league-wide this week, independent of who got chopped. It's a strong wildcard beat for a team that isn't otherwise in the story (not the chopped team, not the closest survivor, not the top scorer) — especially when the number is negative. Use it when it's genuinely striking; skip it when it's just an unremarkable low number.
+- You may invent small, plausible dramatizing details to dress up a real numeric fact — a trade that could have saved someone but arrived too late, a bad ref spot, a coin-flip break, a manager's own past trash talk about a player. These are flavor, not reporting: they explain or color a real margin or score, never contradict or replace the real numbers/outcome you were given.
+- If a "history" object is given, it's real cross-week memory (e.g. this team survived a close call last week too) — use it for a genuine callback when it's relevant to this week's story. Never invent a history beat that isn't in the data. If nothing in history fits, ignore it entirely.
 - Pick 2-3 facts that make the best story. Skip the rest. A message reciting the full box score is worse than one sharp detail.
 - A forward-looking line baiting the upcoming FAAB waiver bids is a strong, but not mandatory, closing beat — these messages always go out before the Wednesday waiver clear.
 
@@ -37,10 +39,24 @@ On the razor's edge, Tfranklin123 survives by 0.14 — a pure rounding error. Th
 
 High above the blood, qcdavis cruised at 149.7 from the safety of the gallery.
 
-Sixteen remain, and the first carcass is officially on the block. Place your bids. This week, the margin between breathing and blade was measured in inches."`;
+Sixteen remain, and the first carcass is officially on the block. Place your bids. This week, the margin between breathing and blade was measured in inches."
 
-export function buildUserPrompt(facts: unknown): string {
-  return `Week's facts:\n${JSON.stringify(facts, null, 2)}\n\nWrite this week's message.`;
+REFERENCE EXAMPLE 2 — cross-week callback + disaster_start wildcard (target quality bar)
+
+Facts: Week 2. carlson4thewin chopped at 51.76 (weakest starter 1.9). Next closest survivor baezk at 78.28, margin 26.52 (not a close call) — carried by one starter doing most of the work. Top scorer Tfranklin123 at 138.22, with a 39.5-point starter (just under the "carried" share threshold, but still the headline number). disaster_start: davidfulkerson05, a starter who scored negative points — not the chopped team, not otherwise featured. History: Tfranklin123 had a close_call in Week 1 (survived by 0.14).
+
+Output:
+"The blade barely had to lift itself this week. carlson4thewin bled out at 51.76, a full 26 points from the nearest survivor. One starter contributed 1.9. That is not a lineup, that is an offering.
+
+At the other extreme sits Tfranklin123 at 138.22. After escaping last week by a 0.14 rounding error, he rode to safety this time on the back of a 39.5-point eruption from a player he loudly insisted was a mistake. Fortunes may change, but the slander remains on record.
+
+Below the safety line, baezk is holding the door shut at 78.28, carried almost entirely by one man doing the work of a whole roster. And then there's davidfulkerson05, who did something rarer than losing — he started a player who actively scored against him. Negative production. A saboteur in his own starting lineup. It's hard for a one-legged man to win an ass-kicking contest.
+
+Fifteen remain. The guillotine doesn't need a bad month from you. It only ever needed one quiet week, and it just got its second taste. Place your bids."`;
+
+export function buildUserPrompt(facts: unknown, history?: unknown): string {
+  const payload = history && Object.keys(history as object).length ? { ...(facts as object), history } : facts;
+  return `Week's facts:\n${JSON.stringify(payload, null, 2)}\n\nWrite this week's message.`;
 }
 
 // Sent right after the league drafts, before there's a Week 1 score to
