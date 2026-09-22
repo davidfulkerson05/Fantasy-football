@@ -13,6 +13,11 @@ export type HistoryEventType = "blown_out" | "disaster_start" | "close_loss" | "
 export interface HistoryEvent {
   week: number;
   type: HistoryEventType;
+  // The real number behind the event, when there is one: margin for
+  // blown_out/close_loss/close_call, points for top_scorer/disaster_start.
+  // Lets a genuine running-total callback ("two weeks running, 5.36 total
+  // points") be grounded in real numbers instead of just naming the pattern.
+  value?: number;
 }
 
 export type TeamHistory = Record<string, HistoryEvent[]>;
@@ -49,21 +54,23 @@ export async function buildTeamHistory(
     if (!cached) continue;
     const facts = cached.facts;
 
-    const add = (team: string, type: HistoryEventType) => {
-      (history[team] ??= []).push({ week: w, type });
+    const add = (team: string, type: HistoryEventType, value?: number) => {
+      (history[team] ??= []).push({ week: w, type, value });
     };
 
     if (isRedraftFacts(facts)) {
-      if (facts.biggestBlowout) add(facts.biggestBlowout.loser, "blown_out");
-      if (facts.closestGame) add(facts.closestGame.loser, "close_loss");
-      if (facts.topScorer) add(facts.topScorer.team, "top_scorer");
-      if (facts.disasterStart) add(facts.disasterStart.team, "disaster_start");
+      if (facts.biggestBlowout) add(facts.biggestBlowout.loser, "blown_out", facts.biggestBlowout.margin);
+      if (facts.closestGame) add(facts.closestGame.loser, "close_loss", facts.closestGame.margin);
+      if (facts.topScorer) add(facts.topScorer.team, "top_scorer", facts.topScorer.points);
+      if (facts.disasterStart) add(facts.disasterStart.team, "disaster_start", facts.disasterStart.points);
     } else if (isGuillotineFacts(facts)) {
       // The chopped team is gone from future weeks, so there's no future
       // callback to make about them — only survivors' history matters here.
-      if (facts.next_closest_survivor?.close_call) add(facts.next_closest_survivor.team, "close_call");
-      if (facts.top_scorer) add(facts.top_scorer.team, "top_scorer");
-      if (facts.disaster_start) add(facts.disaster_start.team, "disaster_start");
+      if (facts.next_closest_survivor?.close_call) {
+        add(facts.next_closest_survivor.team, "close_call", facts.next_closest_survivor.margin_over_chopped);
+      }
+      if (facts.top_scorer) add(facts.top_scorer.team, "top_scorer", facts.top_scorer.points);
+      if (facts.disaster_start) add(facts.disaster_start.team, "disaster_start", facts.disaster_start.points);
     }
   }
 
