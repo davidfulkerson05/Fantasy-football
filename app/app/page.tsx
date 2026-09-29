@@ -11,6 +11,7 @@ export default function AppPage() {
   const [leagueName, setLeagueName] = useState<string | null>(null);
   const [isElimination, setIsElimination] = useState<boolean | null>(null);
   const [week, setWeek] = useState(1);
+  const [weekInput, setWeekInput] = useState("1");
   const [mode, setMode] = useState<"draft" | "week">("draft");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -134,14 +135,52 @@ export default function AppPage() {
       ) : (
         <>
           <label style={label}>Week</label>
-          <input
-            style={{ ...input, width: 80 }}
-            type="number"
-            min={1}
-            max={18}
-            value={week}
-            onChange={(e) => setWeek(parseInt(e.target.value, 10) || 1)}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              type="button"
+              style={stepperButton}
+              onClick={() => {
+                const next = Math.max(1, week - 1);
+                setWeek(next);
+                setWeekInput(String(next));
+              }}
+              aria-label="Previous week"
+            >
+              −
+            </button>
+            <input
+              style={{ ...input, width: 64, textAlign: "center" }}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={weekInput}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                setWeekInput(raw);
+                const n = parseInt(raw, 10);
+                if (!Number.isNaN(n)) setWeek(Math.min(18, Math.max(1, n)));
+              }}
+              onBlur={() => {
+                const n = parseInt(weekInput, 10);
+                const clamped = Number.isNaN(n) ? 1 : Math.min(18, Math.max(1, n));
+                setWeek(clamped);
+                setWeekInput(String(clamped));
+              }}
+            />
+            <button
+              type="button"
+              style={stepperButton}
+              onClick={() => {
+                const next = Math.min(18, week + 1);
+                setWeek(next);
+                setWeekInput(String(next));
+              }}
+              aria-label="Next week"
+            >
+              +
+            </button>
+          </div>
         </>
       )}
 
@@ -209,6 +248,20 @@ const secondaryButton: React.CSSProperties = {
   ...button,
   background: "#e4e0d8",
   color: "#211f1c",
+};
+
+const stepperButton: React.CSSProperties = {
+  width: 36,
+  height: 36,
+  flexShrink: 0,
+  padding: 0,
+  background: "#e4e0d8",
+  border: "none",
+  borderRadius: 6,
+  color: "#211f1c",
+  fontSize: 18,
+  lineHeight: 1,
+  cursor: "pointer",
 };
 
 const tabBase: React.CSSProperties = {
