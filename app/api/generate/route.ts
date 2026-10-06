@@ -86,16 +86,22 @@ export async function GET(req: NextRequest) {
       userPrompt = isElimination ? buildDraftUserPrompt(f, notes) : buildRedraftDraftUserPrompt(f, notes);
     } else {
       const matchups = await getMatchups(leagueId, week);
+      // 18-week lookback (effectively the whole regular season + playoffs)
+      // rather than a short rolling window — relevantHistory() already
+      // narrows this down to only teams featured in this week's facts, so
+      // widening it costs nothing but lets a real season-opening beat (e.g.
+      // "this team was Week 1's top scorer") stay available for a callback
+      // no matter how late in the season it's relevant.
       ({ systemPrompt, userPrompt, facts } = isElimination
         ? await (async () => {
             const f = buildWeekFacts(week, rosters, users, matchups);
-            const history = await buildTeamHistory(leagueId, week, 6);
+            const history = await buildTeamHistory(leagueId, week, 18);
             const relevant = relevantHistory(f, history);
             return { systemPrompt: GUILLOTINE_SYSTEM_PROMPT, userPrompt: buildUserPrompt(f, relevant, notes), facts: f };
           })()
         : await (async () => {
             const f = buildRedraftWeekFacts(week, rosters, users, matchups);
-            const history = await buildTeamHistory(leagueId, week, 6);
+            const history = await buildTeamHistory(leagueId, week, 18);
             const relevant = relevantHistory(f, history);
             return {
               systemPrompt: REDRAFT_SYSTEM_PROMPT,

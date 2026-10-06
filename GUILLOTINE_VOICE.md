@@ -75,8 +75,13 @@ sub-array nearly got miscited as a real close call).
 6. **Cross-week history**, when given — real memory of a team's past weeks
    (a prior close call, a prior top score, a prior disaster start), computed
    from the cache the same way the redraft voice's history works
-   (`lib/history.ts`). Use it for a genuine callback ("survived by a hair
-   last week too"); never invent a history beat that isn't in the data.
+   (`lib/history.ts`), looking back up to 18 weeks (effectively the whole
+   season) since a team's history is filtered down to only teams featured
+   in this week's facts anyway. Each event carries the real week number and
+   a real value (margin or points) — **cite the week number and number
+   directly** ("In Week 1, he dropped 149.7") rather than computing a
+   relative phrase like "four weeks ago," which risks being wrong. Never
+   invent a history beat, week, or number that isn't in the data.
 7. **Forward-looking FAAB tease** — a line baiting the waiver wire, since the
    message always lands before Wednesday's bid clear. Not mandatory every
    single week, but a strong recurring beat.
@@ -241,6 +246,66 @@ with at all, so davidfulkerson05's negative-starter week went unmentioned:
 >
 > Fifteen remain. Place your bids, and understand that a quiet week is all
 > the guillotine asks for.
+
+**Hand-edited reference** — user-approved rewrite demonstrating `user_notes`
+(a prayer video, a freak 3-TDs-in-19-seconds sequence) alongside a precise
+history callback — citing the exact week and number instead of a vague
+relative phrase:
+
+> The guillotine rarely takes requests, but this week it cashed the check.
+> Someone got on camera, dropped to their knees before Bijan Robinson, and
+> begged for the head of qcdavis. The blade answered.
+>
+> One moment hold our breath. On Sunday afternoon, qcdavis mounted a
+> furious resurrection, three touchdowns in nineteen seconds of game time,
+> sudden enough to choke the laughter right out of the room. But then the
+> scoreboard stopped moving at 88.68. A solitary 2.9 from one starter was
+> all the ballast required to pull a miracle underwater. In Week 1, he
+> dropped 149.7 and watched the execution from the highest balcony. The
+> scaffold has no memory; it only has an appetite.
+>
+> Beneath him, jasesimon pulls off another Houdini act at 89.00, surviving
+> by 0.32 points. A week after posting an outright zero, he cheats death
+> on the grace of a decimal point. You can only drive on an empty tank for
+> so long before the engine seizes.
+>
+> At the summit, JacobDranik cruised in clean air at 140.32. Across the
+> way, baezk broke 110 despite fielding a starter who produced nothing at
+> all — the second consecutive week someone has rolled out a dead body and
+> watched someone else take the fall.
+>
+> Thirteen remain. Say your prayers. Hug your family. Place your bids.
+
+For comparison, the original generation for the same facts — it had the
+real `user_notes` content (prayer video, the TD sequence) and the real
+history event (qcdavis was Week 1's top scorer at 149.7), but rendered the
+callback as a guessed, wrong relative phrase instead of citing the week and
+number it was actually given:
+
+> Prayer, it turns out, is a transaction the guillotine honors. Someone in
+> this league filmed themselves kneeling to Bijan asking for qcdavis's
+> head, and the blade, which rarely takes requests, made an exception.
+>
+> It nearly didn't. On Sunday qcdavis watched two of his players score
+> three touchdowns in nineteen seconds of game time, a resurrection so
+> violent the gallery actually went quiet. Then the scoreboard stopped
+> moving. 88.68. One starter turned in 2.9, which is the exact weight of
+> the thing that dragged him under while the rest of the roster was busy
+> performing miracles. Four weeks ago he was the week's high scorer looking
+> down on the blood. The basket does not care where you were standing in
+> Week 1.
+>
+> jasesimon lives at 89. Thirty-two hundredths of a point. Not a comeback,
+> not a stand — a rounding error with a pulse, from a manager who just last
+> week started a player who scored exactly zero. He has now survived two
+> weeks on fumes and the goodwill of a decimal place.
+>
+> JacobDranik sat far above it at 140.32, untouched. And baezk cleared 110
+> while quietly fielding a starter who produced nothing at all, the second
+> week in a row this league has handed the blade a corpse in a starting
+> slot and gotten away with it.
+>
+> Thirteen remain. Pray if you like. Place your bids.
 
 ## Real historical messages (raw inspiration, not the template)
 
