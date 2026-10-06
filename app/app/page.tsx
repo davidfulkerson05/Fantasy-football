@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 const STORAGE_KEY = "guillotine.token";
 const NAME_KEY = "guillotine.leagueName";
 const ELIMINATION_KEY = "guillotine.isElimination";
+const MAX_NOTES_LENGTH = 500;
 
 export default function AppPage() {
   const [token, setToken] = useState<string | null>(null);
@@ -13,6 +14,7 @@ export default function AppPage() {
   const [week, setWeek] = useState(1);
   const [weekInput, setWeekInput] = useState("1");
   const [mode, setMode] = useState<"draft" | "week">("draft");
+  const [notes, setNotes] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -58,8 +60,10 @@ export default function AppPage() {
     try {
       const query =
         mode === "draft" ? `draft=1` : `week=${week}`;
+      const trimmedNotes = notes.trim();
+      const notesParam = trimmedNotes ? `&notes=${encodeURIComponent(trimmedNotes)}` : "";
       const res = await fetch(
-        `/api/generate?token=${encodeURIComponent(token)}&${query}${regenerate ? "&regenerate=1" : ""}`
+        `/api/generate?token=${encodeURIComponent(token)}&${query}${regenerate ? "&regenerate=1" : ""}${notesParam}`
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong");
@@ -184,6 +188,23 @@ export default function AppPage() {
         </>
       )}
 
+      <label style={label}>Anything specific to mention? (optional)</label>
+      <textarea
+        style={textarea}
+        value={notes}
+        maxLength={MAX_NOTES_LENGTH}
+        onChange={(e) => setNotes(e.target.value)}
+        placeholder={
+          'e.g. "someone sent a video of themselves praying to Bijan before his game" or ' +
+          '"two of my players scored 3 TDs combined in the last 19 seconds of the late game"'
+        }
+        rows={3}
+      />
+      <p style={{ color: "#8c8579", fontSize: 12, marginTop: 4, marginBottom: 0 }}>
+        {notes.length}/{MAX_NOTES_LENGTH} — real stuff the box score won&rsquo;t show. Leave it
+        blank most weeks.
+      </p>
+
       <button style={button} onClick={() => generate(false)} disabled={loading}>
         {loading
           ? isElimination
@@ -231,6 +252,12 @@ const input: React.CSSProperties = {
   borderRadius: 6,
   color: "#211f1c",
   fontSize: 15,
+};
+
+const textarea: React.CSSProperties = {
+  ...input,
+  fontFamily: "inherit",
+  resize: "vertical",
 };
 
 const button: React.CSSProperties = {

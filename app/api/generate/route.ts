@@ -14,12 +14,16 @@ import { buildDraftFacts } from "@/lib/draftFacts";
 import { buildTeamHistory, relevantHistory } from "@/lib/history";
 import { getTokenRecord, getCachedWeek, setCachedWeek } from "@/lib/db";
 
-// GET /api/generate?token=...&week=1[&regenerate=1]
-// GET /api/generate?token=...&draft=1[&regenerate=1]
+// GET /api/generate?token=...&week=1[&regenerate=1][&notes=...]
+// GET /api/generate?token=...&draft=1[&regenerate=1][&notes=...]
 // The token (from a paid season pass) resolves the league server-side —
 // nothing league-identifying is taken from the client, so there's nothing
 // to spoof. Results are cached per league+week so repeat clicks on the
 // same week don't re-spend Claude credits; ?regenerate=1 bypasses that.
+// notes is free text the buyer supplies for something the box score can't
+// capture (a reaction video, a freak scoring play) — passed straight into
+// the prompt as real context. Supplying notes always bypasses the cache,
+// same as an explicit regenerate, since a cached message can't reflect it.
 // draft=1 requests the post-draft message instead of a weekly recap —
 // there's no score to write about until Week 1 finishes, so this is what
 // buyers get right after purchasing pre-season. Cached under week 0.
@@ -32,6 +36,8 @@ export async function GET(req: NextRequest) {
   const weekParam = req.nextUrl.searchParams.get("week");
   const week = weekParam ? parseInt(weekParam, 10) : NaN;
   const regenerate = req.nextUrl.searchParams.get("regenerate") === "1";
+  const rawNotes = req.nextUrl.searchParams.get("notes");
+  const notes = rawNotes?.trim().slice(0, 500) || null;
 
   if (!token || (!draftMode && (!Number.isFinite(week) || week < 1))) {
     return NextResponse.json({ error: "token and a valid week are required" }, { status: 400 });
@@ -45,7 +51,7 @@ export async function GET(req: NextRequest) {
   const cacheWeek = draftMode ? 0 : week;
 
   try {
-    if (!regenerate) {
+    if (!regenerate && !notes) {
       const cached = await getCachedWeek(leagueId, cacheWeek);
       if (cached) {
         return NextResponse.json(cached);
@@ -77,7 +83,7 @@ export async function GET(req: NextRequest) {
       const f = buildDraftFacts(rosters, users, picks);
       facts = f;
       systemPrompt = isElimination ? GUILLOTINE_DRAFT_SYSTEM_PROMPT : REDRAFT_DRAFT_SYSTEM_PROMPT;
-      userPrompt = isElimination ? buildDraftUserPrompt(f) : buildRedraftDraftUserPrompt(f);
+      userPrompt = isElimination ? buildDraftUserPrompt(f, notes) : buildRedraftDraftUserPrompt(f, notes);
     } else {
       const matchups = await getMatchups(leagueId, week);
       ({ systemPrompt, userPrompt, facts } = isElimination
@@ -85,7 +91,7 @@ export async function GET(req: NextRequest) {
             const f = buildWeekFacts(week, rosters, users, matchups);
             const history = await buildTeamHistory(leagueId, week, 6);
             const relevant = relevantHistory(f, history);
-            return { systemPrompt: GUILLOTINE_SYSTEM_PROMPT, userPrompt: buildUserPrompt(f, relevant), facts: f };
+            return { systemPrompt: GUILLOTINE_SYSTEM_PROMPT, userPrompt: buildUserPrompt(f, relevant, notes), facts: f };
           })()
         : await (async () => {
             const f = buildRedraftWeekFacts(week, rosters, users, matchups);
@@ -93,7 +99,7 @@ export async function GET(req: NextRequest) {
             const relevant = relevantHistory(f, history);
             return {
               systemPrompt: REDRAFT_SYSTEM_PROMPT,
-              userPrompt: buildRedraftUserPrompt(f, relevant),
+              userPrompt: buildRedraftUserPrompt(f, relevant, undefined, notes),
               facts: f,
             };
           })());
