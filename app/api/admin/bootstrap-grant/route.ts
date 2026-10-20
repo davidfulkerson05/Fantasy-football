@@ -11,12 +11,11 @@ import { nanoid } from "nanoid";
 // after use; do not leave it deployed.
 const BOOTSTRAP_SECRET = "266d182aafc52cd52cf4554c2f729950404806396c43df4b";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null);
-  const secret = body?.secret as string | undefined;
-  const leagueId = body?.leagueId as string | undefined;
-  const leagueName = body?.leagueName as string | undefined;
-  const email = body?.email as string | undefined;
+export async function GET(req: NextRequest) {
+  const secret = req.nextUrl.searchParams.get("secret") ?? undefined;
+  const leagueId = req.nextUrl.searchParams.get("leagueId") ?? undefined;
+  const leagueName = req.nextUrl.searchParams.get("leagueName") ?? undefined;
+  const email = req.nextUrl.searchParams.get("email") ?? undefined;
 
   if (secret !== BOOTSTRAP_SECRET) {
     return NextResponse.json({ error: "Invalid admin secret." }, { status: 403 });
